@@ -12,8 +12,8 @@ $iptables -t nat -F
 # NAT
 $iptables -t nat -A POSTROUTING -o $WAN -j MASQUERADE
 
-# Forward packets
+# Forward packets from LAN to WAN
 $iptables -A FORWARD -i $LAN -o $WAN -j ACCEPT
 
-# Accept incoming packets from WAN
+# Accept incoming packets from WAN to LAN
 $iptables -A FORWARD -i $WAN -o $LAN -m state --state RELATED,ESTABLISHED -j ACCEPT
