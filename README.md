@@ -1,4 +1,4 @@
-# Virus Controlled by an External Server and Spreads out into other Computers in the LAN
+# Intrusion Detector - Virus Connected to external Server that penetrated to a VMs LAN 
 *Explanation of the project*
 
 ## Prerequisites
