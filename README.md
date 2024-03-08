@@ -1,4 +1,4 @@
-# Intrusion Detector - Virus Connected to external Server that penetrated to a VMs LAN 
+# Anti-Virus
 *Explanation of the project*
 
 ## Prerequisites
