@@ -1,5 +1,5 @@
 # This is the file that when executed, the router virtual machine becomes a router.
-# Located at /home/kali/VirusProject
+# Located at /home/kali/AntiVirus
 
 iptables=`which iptables`
 LAN='eth1'
