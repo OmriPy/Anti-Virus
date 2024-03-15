@@ -1,6 +1,30 @@
-Must have:
+Note: Sorted by order of importance
+
+Must have - basic functionallity:
+- Define virus as the whatsapp application: `ps aux | grep WhatsApp`
 - find a virus by checking if name of a running proces is name of a virus
 - prevent virus from doing its things
 
+Important - must for project requirements:
+    OOP:
+        - Make sure that the entire project uses at least 4 OOP classes
+    Networking:
+        - Create a protocol for the antivirus and it's server
+        - Create the Antivirus Server. Becuase a socket server is required. 
+          The server will get notification from an attacked client and send it to all clients.
+        - Add multiclient functionallity to the server. Because a multiclient server is required
+    Operating systems:
+        - Make sure that the multiclient server is using multithreading
+        - Make sure that the virus detctor uses the OS API to detect the virus
+    Security:
+        - Add encryption to the antivirus server-client protocol
+    GUI:
+        - Add "virus detected" notification to the antivirus client
 
-Important:
+Nice to have:
+- Create a simple vulnerable app - DONE
+- Make the vulnerable app open to the web
+- Create a virus
+- Create a virus server that attacks the vulnerable web app and runs the virus on the victim PC
+- Add to the virus and it's server command running functionallity
+- Add to the antivirus server a database of the virus signatures (like process name or behavior)
