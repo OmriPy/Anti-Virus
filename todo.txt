@@ -1,0 +1,6 @@
+Must have:
+- find a virus by checking if name of a running proces is name of a virus
+- prevent virus from doing its things
+
+
+Important:
