@@ -1,15 +1,15 @@
 Note: Sorted by order of importance
 
 Must have - basic functionallity:
-- Define virus as the whatsapp application: `ps aux | grep WhatsApp`
-- find a virus by checking if name of a running proces is name of a virus
-- prevent virus from doing its things
+- Define virus as the whatsapp application: `ps aux | grep WhatsApp` - DONE
+- find a virus by checking if name of a running proces is name of a virus - DONE
+- prevent virus from doing its things - DONE
 
 Important - must for project requirements:
     OOP:
         - Make sure that the entire project uses at least 4 OOP classes
     Networking:
-        - Create a protocol for the antivirus and it's server
+        - Create a protocol for the antivirus and its server
         - Create the Antivirus Server. Becuase a socket server is required. 
           The server will get notification from an attacked client and send it to all clients.
         - Add multiclient functionallity to the server. Because a multiclient server is required
