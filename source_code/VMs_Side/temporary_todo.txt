@@ -1,5 +1,5 @@
+Sorted by importance
+
 Project:
-* Think about the ip the anti virus connects to. on client VMs, the ip should not be localhost
-* Add lock to the threads implementation of the server
-* Modify the client code to send the server a message "hi I'm client" and also the server code to manage this message
-* Add after line 9 in server.py: `client.close()`
+* Tell the clients everytime a virus was detected - check how you can do that
+* Think about the ip the anti viruses and the clients connect to. on client VMs, the ip should not be localhost
