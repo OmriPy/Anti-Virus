@@ -1,43 +1,8 @@
 from protocol import *
-import os
-import subprocess
 import time
-from typing import List, Dict
-
 
 virus = 'WhatsApp'
-delay = 5
-
-#### Utility Functions ####
-
-def output_of_command(cmd: str) -> str:
-    return subprocess.check_output(cmd, shell=True).decode()
-
-def filter_matches(string: str, lst: List[str]) -> List[str]:
-    found = []
-    for proc in lst:
-        if string in proc:
-            found.append(proc)
-    return found
-
-def find_pids(processes: List[str]) -> List[int]:
-    pids = []
-    for proc in processes:
-        pids.append(int(proc[:5]))
-    return pids
-
-def kill_procs(pids: List[int]) -> bool:
-    for pid in pids:
-        try:
-            os.kill(pid, 9)    # 9 = signal.SIGKILL
-        except PermissionError:
-            print('Virus could not be killed.')
-            return False
-    print('Virus killed.')
-    return True
-
-
-#### Main Functions ####
+delay = 10
 
 def find_and_kill_process(process_name: str) -> Tuple[bool, bool]:
     """Finds the given process and kills it. Returns a tuple containing two booleans: Found & Killed.
@@ -52,10 +17,10 @@ def find_and_kill_process(process_name: str) -> Tuple[bool, bool]:
     if len(found_procs) == 0:
         found = False
         killed = False
-        print('Virus was not detected.')
+        print_colored('anti virus' ,'Virus was not detected')
     else:
         found = True
-        print('Virus detected!')
+        print_colored('anti virus' ,'Virus detected')
         pids = find_pids(found_procs)
         killed = kill_procs(pids)
     return found, killed
@@ -67,21 +32,27 @@ possibilities: Dict[Tuple[bool, bool], str] = {
 }
 
 def main():
-    sock = connected_socket('127.0.0.1')    # TODO: think about the ip. on client VMs, the ip should not be localhost
+    sock = connected_socket('127.0.0.1')
+    print_colored('info', 'Anti Virus has connected to the server')
     server_msg = send_and_recv(sock, Messages.ANTI_VIRUS_CONNECTED)
     if server_msg != Messages.OK:
-        print('The server send a message that is not OK')
+        print_colored('error', 'The server sent a message that is not OK. Exiting')
+        sock.close()
         return
     while True:
         try:
             time.sleep(delay)
         except KeyboardInterrupt:
+            send_and_recv(sock, Messages.CONNECTION_CLOSED)
+            print_colored('info', Messages.CONNECTION_CLOSED)
+            print_colored('info', Messages.CTRL_C)
+            sock.close()
             return
         killing_result = find_and_kill_process(virus)
-        msg = possibilities[killing_result]
-        print(send_and_recv(sock, msg))
-        print()
-    
+        if killing_result != (False, False):
+            msg = possibilities[killing_result]
+            server_msg = send_and_recv(sock, msg)
+            print_colored('server', server_msg)
 
 
 if __name__ == '__main__':
