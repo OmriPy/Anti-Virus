@@ -1,0 +1,16 @@
+No virus detected:
+Found: False
+Killed: False
+
+Virus detected and killed:
+Found: True
+Killed: True
+
+Virus could not be killed
+Found: True
+Killed: False
+
+
+Cannot happen:
+Found: False
+Killed: True
