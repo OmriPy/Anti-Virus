@@ -1,4 +1,5 @@
 Project:
 * Think about the ip the anti virus connects to. on client VMs, the ip should not be localhost
 * Add lock to the threads implementation of the server
-* Check if a socket is still being closed even after returning inside a with
+* Modify the client code to send the server a message "hi I'm client" and also the server code to manage this message
+* Add after line 9 in server.py: `client.close()`
