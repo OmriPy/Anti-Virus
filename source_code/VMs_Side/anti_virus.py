@@ -39,7 +39,7 @@ def kill_procs(pids: List[int]) -> bool:
 
 #### Main Functions ####
 
-def find_and_kill_process(process_name: str) -> Tuple[bool]:
+def find_and_kill_process(process_name: str) -> Tuple[bool, bool]:
     """Finds the given process and kills it. Returns a tuple containing two booleans: Found & Killed.
     
     Returns (False, False) if the process was not detected,
@@ -60,7 +60,7 @@ def find_and_kill_process(process_name: str) -> Tuple[bool]:
         killed = kill_procs(pids)
     return found, killed
 
-possibilities: Dict[Tuple[bool], str] = {
+possibilities: Dict[Tuple[bool, bool], str] = {
     (False, False): 'No virus detected.',
     (True, True): 'The virus was detected and killed successfully.',
     (True, False): 'The virus was detected, but could not be killed'
@@ -68,6 +68,10 @@ possibilities: Dict[Tuple[bool], str] = {
 
 def main():
     sock = connected_socket('127.0.0.1')    # TODO: think about the ip. on client VMs, the ip should not be localhost
+    server_msg = send_and_recv(sock, Messages.ANTI_VIRUS_CONNECTED)
+    if server_msg != Messages.OK:
+        print('The server send a message that is not OK')
+        return
     while True:
         try:
             time.sleep(delay)
@@ -77,6 +81,7 @@ def main():
         msg = possibilities[killing_result]
         print(send_and_recv(sock, msg))
         print()
+    
 
 
 if __name__ == '__main__':
