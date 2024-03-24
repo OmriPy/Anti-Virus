@@ -47,7 +47,7 @@ def connected_socket(IP: str) -> socket:
     try:
         sock.connect((IP, PORT))
     except ConnectionRefusedError:
-        print('The server is not running')
+        print_colored('error', 'The server is not running')
         exit(0)
     return sock
 
