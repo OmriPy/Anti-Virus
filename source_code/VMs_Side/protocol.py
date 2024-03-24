@@ -1,6 +1,5 @@
 from utils import *
 from socket import socket, AF_INET, SOCK_STREAM
-from typing import Tuple
 
 ####    Utilities    ####
 
@@ -119,7 +118,7 @@ def recv(sock: socket) -> str:
 
     return msg[1]
 
-def send_and_recv(sock: socket, msg: str) -> str:   # useful for client
+def send_and_recv(sock: socket, msg: str) -> str:
     send(sock, msg)
     return recv(sock)
 
@@ -130,3 +129,4 @@ class Messages:
     CONNECTION_CLOSED = 'The connection has been closed'
     CLIENT_CONNECTED = 'Client has connected'
     ANTI_VIRUS_CONNECTED = 'Anti Virus has connected'
+    CTRL_C = 'Exiting due to CTRL+C'
