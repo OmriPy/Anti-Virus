@@ -1,3 +1,4 @@
 Project:
-* think about the ip the anti virus connects to. on client VMs, the ip should not be localhost
+* Think about the ip the anti virus connects to. on client VMs, the ip should not be localhost
 * Add lock to the threads implementation of the server
+* Check if a socket is still being closed even after returning inside a with
