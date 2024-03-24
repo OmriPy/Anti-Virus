@@ -3,11 +3,15 @@ from threading import Thread
 
 def handle_client(client: socket):
     print('A client has connected')
-    try:
+    '''try:
         send(client, 'This is a message from the server!')
     except ProtocolError as e:
         print(e)
-        return
+        return'''
+    while True:
+        print(recv(client))
+        send(client, Messages.OK)    # for now, doesn't check the value of the message, if it is alright or not
+    client.close()
 
 def server():
     with listening_socket('0.0.0.0') as server:
