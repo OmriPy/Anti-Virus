@@ -3,7 +3,6 @@ from typing import Tuple, List, Dict, Callable
 import os
 import subprocess
 
-
 #### Anti Virus Utility Functions ####
 
 def output_of_command(cmd: str) -> str:
@@ -40,8 +39,8 @@ init()
 colors = {
     'Server': Fore.LIGHTBLACK_EX,
     'Client': Fore.BLUE,
-    'Anti virus': Fore.LIGHTGREEN_EX,
-    'Info': Fore.CYAN,
+    'Anti virus': Fore.CYAN,
+    'Info': Fore.RESET,
     'Warning': Fore.YELLOW,
     'Error': Fore.LIGHTRED_EX
 }
