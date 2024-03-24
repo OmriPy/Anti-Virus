@@ -1,7 +1,7 @@
 from protocol import *
 import time
 
-virus = 'WhatsApp'
+virus = 'lab_rat.py'
 delay = 10
 
 def find_and_kill_process(process_name: str) -> Tuple[bool, bool]:
@@ -26,33 +26,31 @@ def find_and_kill_process(process_name: str) -> Tuple[bool, bool]:
     return found, killed
 
 possibilities: Dict[Tuple[bool, bool], str] = {
-    (False, False): 'No virus detected.',
-    (True, True): 'The virus was detected and killed successfully.',
+    (False, False): 'No virus detected',
+    (True, True): 'The virus was detected and killed successfully',
     (True, False): 'The virus was detected, but could not be killed'
 }
 
 def main():
-    sock = connected_socket('127.0.0.1')
-    print_colored('info', 'Anti Virus has connected to the server')
-    server_msg = send_and_recv(sock, Messages.ANTI_VIRUS_CONNECTED)
-    if server_msg != Messages.OK:
-        print_colored('error', 'The server sent a message that is not OK. Exiting')
-        sock.close()
-        return
-    while True:
-        try:
-            time.sleep(delay)
-        except KeyboardInterrupt:
-            send_and_recv(sock, Messages.CONNECTION_CLOSED)
-            print_colored('info', Messages.CONNECTION_CLOSED)
-            print_colored('info', Messages.CTRL_C)
-            sock.close()
+    with connected_socket('127.0.0.1') as sock:
+        print_colored('info', 'Anti Virus has connected to the server')
+        server_msg = send_and_recv(sock, Messages.ANTI_VIRUS_CONNECTED)
+        if server_msg != Messages.OK:
+            print_colored('error', 'The server sent a message that is not OK. Exiting')
             return
-        killing_result = find_and_kill_process(virus)
-        if killing_result != (False, False):
-            msg = possibilities[killing_result]
-            server_msg = send_and_recv(sock, msg)
-            print_colored('server', server_msg)
+        while True:
+            try:
+                time.sleep(delay)
+            except KeyboardInterrupt:
+                send_and_recv(sock, Messages.CONNECTION_CLOSED)
+                print_colored('anti virus', Messages.CONNECTION_CLOSED)
+                print_colored('info', Messages.CTRL_C)
+                return
+            killing_result = find_and_kill_process(virus)
+            if killing_result != (False, False):
+                msg = possibilities[killing_result]
+                server_msg = send_and_recv(sock, msg)
+                print_colored('server', server_msg)
 
 
 if __name__ == '__main__':
