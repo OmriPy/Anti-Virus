@@ -32,11 +32,11 @@ class Window(qtw.QWidget):
 def client(window: Window):
     with connected_socket('127.0.0.1') as client:
         try:
-            data = recv(client)
+            server_msg = recv(client)
         except ProtocolError as e:
             print(e)
             return
-        window.change_text(data)
+        window.change_text(server_msg)
 
 if __name__ == '__main__':
     app = qtw.QApplication([])
