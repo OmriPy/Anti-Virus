@@ -1,3 +1,4 @@
+from utils import *
 from socket import socket, AF_INET, SOCK_STREAM
 from typing import Tuple
 
@@ -28,12 +29,12 @@ def listening_socket(IP: str) -> socket:
         sock.bind((IP, PORT))
     except OSError as e:
         if e.errno == 48:
-            print('Try again later')
+            print_colored('error', 'Try again later')
         elif e.errno == 49:
-            print('Cannot bind given IP address')
+            print_colored('error', 'Cannot bind given IP address')
         sock.close()
         exit(0)
-    print('Server is up and running')
+    print_colored('info', 'Server is up and running')
     sock.listen()
     return sock
 
@@ -125,4 +126,7 @@ def send_and_recv(sock: socket, msg: str) -> str:   # useful for client
 
 class Messages:
 
-    OK = 'Your message was recieved and managed.'
+    OK = 'Your message was recieved and managed'
+    CONNECTION_CLOSED = 'The connection has been closed'
+    CLIENT_CONNECTED = 'Client has connected'
+    ANTI_VIRUS_CONNECTED = 'Anti Virus has connected'
