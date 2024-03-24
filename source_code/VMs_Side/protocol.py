@@ -12,6 +12,7 @@ class ProtocolError(Exception):
 
     FLAWED = 'The given packet is flawed according to the protocol'
     BIGGER_THAN_MAX = 'Given data is bigger than the maximum data size'
+    HAS_DELIMITER = 'Packet contains DELIMITER string inside its data field'
 
     def __init__(self, err: str):
         super().__init__(err)
@@ -78,7 +79,10 @@ def flawed_packet(packet: str) -> bool:
     if DELIMITER not in packet:
         return True
 
-    size, data = packet.split(DELIMITER)
+    try:
+        size, data = packet.split(DELIMITER)
+    except ValueError:
+        raise ProtocolError(ProtocolError.HAS_DELIMITER)
 
     return \
         len(packet) > MAX_TOTAL_SIZE or \
@@ -89,7 +93,7 @@ def flawed_packet(packet: str) -> bool:
 
 
 def parse_packet(packet: str) -> Tuple[str, str]:
-    "Parses the packet into its fields and returns it, if it is a valid one. If it isn't, ProtocolError is raised"
+    "Parses the packet into its fields and returns it, if it's a valid one. If it isn't, ProtocolError is raised"
 
     if flawed_packet(packet):
         raise ProtocolError(ProtocolError.FLAWED)
@@ -113,3 +117,12 @@ def recv(sock: socket) -> str:
     msg = parse_packet(msg)
 
     return msg[1]
+
+def send_and_recv(sock: socket, msg: str) -> str:   # useful for client
+    send(sock, msg)
+    return recv(sock)
+
+
+class Messages:
+
+    OK = 'Your message was recieved and managed.'
