@@ -26,23 +26,37 @@ class Window(qtw.QWidget):
         self.data_label.setText(text)
 
     def button_clicked(self):
-        print('The button was clicked!')
+        print_colored('info', 'The button was clicked!')
 
 
 def client(window: Window):
     with connected_socket('127.0.0.1') as client:
+        print_colored('info', 'Client has connected to the server')
+        server_msg = send_and_recv(client, Messages.CLIENT_CONNECTED)
+        if server_msg != Messages.OK:
+            print_colored('error', 'The server sent a message that is not OK. Exiting')
+            return
         try:
             server_msg = recv(client)
         except ProtocolError as e:
-            print(e)
+            print_colored('error', e)
             return
         window.change_text(server_msg)
 
-if __name__ == '__main__':
+def main():
     app = qtw.QApplication([])
     window = Window()
     
     thrd = Thread(target=client, args=(window,))
     thrd.start()
     
-    app.exec()
+    try:
+        app.exec()
+    except KeyboardInterrupt:
+        print_colored('client', Messages.CONNECTION_CLOSED)
+        print_colored('info', Messages.CTRL_C)
+        return
+
+
+if __name__ == '__main__':
+    main()
