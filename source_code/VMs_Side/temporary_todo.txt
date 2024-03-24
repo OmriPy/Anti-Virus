@@ -1,0 +1,11 @@
+Project:
+* add a message for closing connection between two sockets and implement it
+* think about the ip the anti virus connects to. on client VMs, the ip should not be localhost
+* add the cool printing like "[Server]: Hi" to the server, check the internet for that
+* differentiate the anti_virus from the other clients in the server. more specifically, add a message that says
+  "hi, I'm the anti virus" or something like that, and handle it in a separate "handle_client()" function for itself.
+  do that in order to keep the communication between the server and the anti_virus always open in case a virus
+  was detected
+* manage Protocol exceptions in server
+* ⁠think about whether to tell the anti virus to send a message to the server every time a virus was NOT detected or not.
+  Not sending is preferable.
