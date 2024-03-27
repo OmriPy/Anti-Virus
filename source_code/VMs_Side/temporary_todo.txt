@@ -1,6 +1,5 @@
 Sorted by importance
 
 Project:
-* Tell the clients everytime a virus was detected - check how you can do that
-* Modify the printing (and the code accordingly) so that the Clients and the Anti Viruses will have an ID number.
+* Tell the clients everytime a virus was detected
 * Think about the ip the anti viruses and the clients connect to. on client VMs, the ip should not be localhost
