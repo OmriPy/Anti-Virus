@@ -1,67 +1,72 @@
-from protocol import *
+from serverUtils import *
 from threading import Thread, Lock
 
-lock = Lock()
+class Server:
 
-def handle_client(client: socket):
-    lock.acquire()
-    print_colored('server', Messages.CLIENT_CONNECTED)
-    lock.release()
-    try:
-        send(client, 'This is a message from the server!')
-    except ProtocolError as e:
-        lock.acquire()
-        print_colored('error', e)
-        lock.release()
-        client.close()
-        return
+    lock = Lock()
+    clients = Sockets()
+    anti_viruses = Sockets()
 
-def handle_anti_virus(anti_virus: socket):
-    lock.acquire()
-    print_colored('server', Messages.ANTI_VIRUS_CONNECTED)
-    lock.release()
-    while True:
-        anti_virus_msg = recv(anti_virus)
-        lock.acquire()
-        print_colored('anti virus', anti_virus_msg)
-        lock.release()
-        send(anti_virus, Messages.OK)
-        if anti_virus_msg == Messages.CONNECTION_CLOSED:
-            break
-    anti_virus.close()
+    @classmethod
+    def run(cls):
+        with Protocol.listening_socket('0.0.0.0') as server:
+            while True:
+                try:
+                    client, cli_add = server.accept()
+                except KeyboardInterrupt:
+                    print_colored('info', Messages.CTRL_C)
+                    return
+                try:
+                    identity_msg = recv(client)
+                except KeyboardInterrupt:
+                    print_colored('info', Messages.CTRL_C)
+                    client.close()
+                    return
+                except ProtocolError as e:
+                    print_colored('error', e)
+                    client.close()
+                    return
+                if identity_msg == Messages.CLIENT:
+                    sock_thrd = Thread(target=cls.handle_client, args=(client,))
+                elif identity_msg == Messages.ANTI_VIRUS:
+                    sock_thrd = Thread(target=cls.handle_anti_virus, args=(client,))
+                else:
+                    print_colored('error', 'Unknown socket has connected! Neither client nor Anti Virus')
+                    client.close()
+                    return
+                send(client, Messages.OK)
+                sock_thrd.start()
 
-clients_types: Dict[str, Callable] = {
-    Messages.ANTI_VIRUS_CONNECTED: handle_anti_virus,
-    Messages.CLIENT_CONNECTED: handle_client
-}
+    @classmethod
+    def handle_client(cls, client: socket):
+        client_id = cls.clients.add(client)
+        print_colored('server', Messages.connected('Client', client_id), cls.lock)
+        try:
+            send(client, 'This is a message from the server!')
+        except ProtocolError as e:
+            print_colored('error', e, cls.lock)
+            cls.clients.remove(client_id)
+            return
 
-def server():
-    with listening_socket('0.0.0.0') as server:
+    @classmethod
+    def handle_anti_virus(cls, anti_virus: socket):
+        anti_virus_id = cls.anti_viruses.add(anti_virus)
+        print_colored('server', Messages.connected('Anti Virus', anti_virus_id), cls.lock)
         while True:
             try:
-                client, cli_add = server.accept()
-            except KeyboardInterrupt:
-                print_colored('info', Messages.CTRL_C)
-                return
-            try:
-                identity_msg = recv(client)
-            except KeyboardInterrupt:
-                print_colored('info', Messages.CTRL_C)
-                client.close()
-                return
+                anti_virus_msg = recv(anti_virus)
             except ProtocolError as e:
                 print_colored('error', e)
-                client.close()
+                cls.anti_viruses.remove(anti_virus_id)
                 return
-            if identity_msg in clients_types:
-                sock_thrd = Thread(target=clients_types[identity_msg], args=(client,))
-            else:
-                print_colored('error', 'Unknown socket has connected! Neither client nor Anti Virus')
-                client.close()
-                return
-            send(client, Messages.OK)
-            sock_thrd.start()
+            print_colored(f'anti virus({anti_virus_id})', anti_virus_msg, cls.lock)
+            if anti_virus_msg == Messages.CONNECTION_CLOSED:
+                break
+            # TODO: Add here the identifying the clients about the virus detection,
+            # also change the client.py code accordingly
+            send(anti_virus, Messages.OK)
+        cls.anti_viruses.remove(anti_virus_id)
 
 
 if __name__ == '__main__':
-    server()
+    Server.run()
