@@ -30,9 +30,9 @@ class Window(qtw.QWidget):
 
 
 def client(window: Window):
-    with connected_socket('127.0.0.1') as client:
+    with Protocol.connected_socket('127.0.0.1') as client:
         print_colored('info', 'Client has connected to the server')
-        server_msg = send_and_recv(client, Messages.CLIENT_CONNECTED)
+        server_msg = send_and_recv(client, Messages.CLIENT)
         if server_msg != Messages.OK:
             print_colored('error', 'The server sent a message that is not OK. Exiting')
             return
