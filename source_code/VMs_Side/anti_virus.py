@@ -3,7 +3,8 @@ import time
 
 class AntiVirus:
 
-    virus = 'Discord'
+    server_ip = '127.0.0.1'
+    virus = 'lab_rat.py'
     delay = 10
     possibilities: Dict[Tuple[bool, bool], str] = {
         (False, False): 'No virus detected',
@@ -13,7 +14,7 @@ class AntiVirus:
 
     @classmethod
     def run(cls):
-        with Protocol.connected_socket('127.0.0.1') as sock:
+        with Protocol.connected_socket(cls.server_ip) as sock:
             print_colored('info', 'Anti Virus has connected to the server')
 
             # Verify connection with the server
@@ -39,7 +40,7 @@ class AntiVirus:
                 
                 # Perform virus scanning and send results to the server
                 killing_result = cls.find_and_kill_process(cls.virus)
-                if killing_result != (False, False):
+                if killing_result[0]:   # If a virus was found
                     msg = cls.possibilities[killing_result]
                     server_msg = send_and_recv(sock, msg)
                     print_colored('server', server_msg)
