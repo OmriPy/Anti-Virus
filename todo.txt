@@ -23,8 +23,8 @@ Important - must for project requirements:
 
 Nice to have:
 - Create a simple vulnerable app - DONE
-- Make the vulnerable app open to the web
+- Make the vulnerable app open to the web - DONE
 - Create a virus
 - Create a virus server that attacks the vulnerable web app and runs the virus on the victim PC
-- Add to the virus and it's server command running functionallity
+- Add to the virus and its server command running functionallity
 - Add to the antivirus server a database of the virus signatures (like process name or behavior)
