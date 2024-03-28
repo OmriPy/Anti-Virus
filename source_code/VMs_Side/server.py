@@ -56,15 +56,15 @@ class Server:
             try:
                 anti_virus_msg = recv(anti_virus)
             except ProtocolError as e:
-                print_colored('error', e)
+                print_colored('error', e, cls.lock)
                 cls.anti_viruses.remove(anti_virus_id)
                 return
             print_colored(f'anti virus({anti_virus_id})', anti_virus_msg, cls.lock)
+            send(anti_virus, Messages.OK)
             if anti_virus_msg == Messages.CONNECTION_CLOSED:
                 break
-            # TODO: Add here the identifying the clients about the virus detection,
+            # TODO: Add here the notifying the clients about the virus detection,
             # also change the client.py code accordingly
-            send(anti_virus, Messages.OK)
         cls.anti_viruses.remove(anti_virus_id)
 
 
