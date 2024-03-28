@@ -53,9 +53,10 @@ def main():
     try:
         app.exec()
     except KeyboardInterrupt:
-        print_colored('client', Messages.CONNECTION_CLOSED)
-        print_colored('info', Messages.CTRL_C)
-        return
+        pass
+
+    print_colored('client', Messages.CONNECTION_CLOSED)
+    print_colored('info', Messages.CTRL_C)
 
 
 if __name__ == '__main__':
