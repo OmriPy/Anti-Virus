@@ -1,5 +1,11 @@
 Sorted by importance
 
 Project:
+* Rebuild the client code, use 3 classes:
+  1 - Client socket
+  2 - GUI
+  3 - Main class (connecting between the client and GUI classes)
+  Add: `class Page(QFrame)` that will server a page. Then in the GUI class, when the connect_to_server button is clicked,
+  remove the current page by doing `page.setParent(None)` and adding the new page to the layout.
 * Tell the clients everytime a virus was detected
 * Think about the ip the anti viruses and the clients connect to. on client VMs, the ip should not be localhost
