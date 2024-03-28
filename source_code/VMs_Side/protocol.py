@@ -129,8 +129,8 @@ class Messages:
     OK = 'Your message was received and managed'
     CONNECTION_CLOSED = 'The connection has been closed'
     CTRL_C = 'Exiting due to CTRL+C'
-    CLIENT = 'It is Client'
-    ANTI_VIRUS = 'It is Anti virus'
+    CLIENT = 'This is Client'
+    ANTI_VIRUS = 'This is Anti virus'
     CONNECTED_TEMPLATE = '{}({}) has connected'
 
     @classmethod
