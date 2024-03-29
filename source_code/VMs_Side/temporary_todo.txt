@@ -1,6 +1,7 @@
 Sorted by importance
 
 Project:
+* In server.py, when an unknown socket has connected, instead of exiting, use 'continue' to keep the loop going
 * Rebuild the client code, use 3 classes:
   1 - Client socket
   2 - GUI
