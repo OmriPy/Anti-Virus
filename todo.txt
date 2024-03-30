@@ -7,15 +7,15 @@ Must have - basic functionallity:
 
 Important - must for project requirements:
     OOP:
-        - Make sure that the entire project uses at least 4 OOP classes
+        - Make sure that the entire project uses at least 4 OOP classes - DONE
     Networking:
-        - Create a protocol for the antivirus and its server
-        - Create the Antivirus Server. Becuase a socket server is required. 
+        - Create a protocol for the antivirus and its server - DONE
+        - Create the Antivirus Server. Becuase a socket server is required.
           The server will get notification from an attacked client and send it to all clients.
-        - Add multiclient functionallity to the server. Because a multiclient server is required
+        - Add multiclient functionallity to the server. Because a multiclient server is required - DONE
     Operating systems:
-        - Make sure that the multiclient server is using multithreading
-        - Make sure that the virus detctor uses the OS API to detect the virus
+        - Make sure that the multiclient server is using multithreading - DONE
+        - Make sure that the virus detector uses the OS API to detect the virus - (DONE, I think)
     Security:
         - Add encryption to the antivirus server-client protocol
     GUI:
