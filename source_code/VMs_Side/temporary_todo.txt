@@ -1,12 +1,10 @@
 Sorted by importance
 
 Project:
-* In server.py, when an unknown socket has connected, instead of exiting, use 'continue' to keep the loop going
-* Rebuild the client code, use 3 classes:
-  1 - Client socket
-  2 - GUI
-  3 - Main class (connecting between the client and GUI classes)
-  Add: `class Page(QFrame)` that will server a page. Then in the GUI class, when the connect_to_server button is clicked,
-  remove the current page by doing `page.setParent(None)` and adding the new page to the layout.
-* Tell the clients everytime a virus was detected
+* Rebuild the client code, use 3 classes: Client socket, GUI, Main class (connecting between the client and GUI classes)
+  * Add: `class ItemsList(QListView)` that will serve items list managing.
+  * Add: consistent connection between server and client to make the server send alerts to the client,
+         and whenever the client recieves a new message, add the data to the list view.
 * Think about the ip the anti viruses and the clients connect to. on client VMs, the ip should not be localhost
+
+* printing, __str__, SocketID
