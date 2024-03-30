@@ -1,74 +1,43 @@
-import sys
-from PyQt6.QtWidgets import QApplication, QMainWindow, QLabel, QLineEdit, QPushButton, QVBoxLayout, QWidget, QTextEdit
-import socket
-import threading
+from PyQt6.QtWidgets import QApplication, QWidget, QVBoxLayout, QListView, QPushButton
+from PyQt6.QtCore import QStringListModel
 
-class ClientGUI(QMainWindow):
+class MyWindow(QWidget):
     def __init__(self):
         super().__init__()
+        self.setWindowTitle('List View Example')
+        self.setGeometry(100, 100, 300, 200)
 
-        self.setWindowTitle("Socket Client")
-
-        self.central_widget = QWidget()
-        self.setCentralWidget(self.central_widget)
-
+        # Create a main layout
         layout = QVBoxLayout()
-        self.central_widget.setLayout(layout)
+        self.setLayout(layout)
 
-        self.label = QLabel("Enter server IP and port:")
-        layout.addWidget(self.label)
+        # Create a list view
+        self.list_view = QListView()
 
-        self.server_ip_entry = QLineEdit()
-        layout.addWidget(self.server_ip_entry)
+        # Create a model to hold the data
+        self.model = QStringListModel()
 
-        self.server_port_entry = QLineEdit()
-        layout.addWidget(self.server_port_entry)
+        # Add data to the model
+        self.data = ['Item 1', 'Item 2', 'Item 3', 'Item 4']
+        self.model.setStringList(self.data)
 
-        self.connect_button = QPushButton("Connect")
-        self.connect_button.clicked.connect(self.connect_to_server)
-        layout.addWidget(self.connect_button)
+        # Set the model for the list view
+        self.list_view.setModel(self.model)
 
-        self.chat_display = QTextEdit()
-        layout.addWidget(self.chat_display)
+        # Add the list view to the layout
+        layout.addWidget(self.list_view)
 
-        self.message_entry = QLineEdit()
-        layout.addWidget(self.message_entry)
+        button = QPushButton('click me')
+        button.clicked.connect(self.change_data)
+        layout.addWidget(button)
 
-        self.send_button = QPushButton("Send")
-        self.send_button.clicked.connect(self.send_message)
-        layout.addWidget(self.send_button)
-
-        self.client_socket = None
-
-    def connect_to_server(self):
-        server_ip = self.server_ip_entry.text()
-        server_port = int(self.server_port_entry.text())
-
-        self.client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        self.client_socket.connect((server_ip, server_port))
-
-        # Start a new thread to receive messages from the server
-        threading.Thread(target=self.receive_messages).start()
-
-    def receive_messages(self):
-        while True:
-            try:
-                message = self.client_socket.recv(1024).decode()
-                self.chat_display.append(message)
-            except ConnectionAbortedError:
-                break
-
-    def send_message(self):
-        message = self.message_entry.text()
-        if message:
-            self.client_socket.send(message.encode())
-            self.message_entry.clear()
-
-def main():
-    app = QApplication(sys.argv)
-    client_gui = ClientGUI()
-    client_gui.show()
-    sys.exit(app.exec())
+        self.show()
+    
+    def change_data(self):
+        self.data.append('hii')
+        self.model.setStringList(self.data)
 
 if __name__ == "__main__":
-    main()
+    app = QApplication([])
+    window = MyWindow()
+    app.exec()
