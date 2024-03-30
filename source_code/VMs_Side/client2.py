@@ -1,5 +1,5 @@
 from protocol import *
-from PyQt6.QtWidgets import QApplication, QWidget, QVBoxLayout, QPushButton
+from clientUtils import *
 from sys import argv
 
 class Client:
@@ -14,6 +14,8 @@ class Client:
             if server_msg != Messages.OK:
                 print_colored('error', 'The server sent a message that is not OK. Exiting')
                 exit(1)
+            server_msg = recv(client)
+            print_colored('server', server_msg)
 
 
 class GUI(QWidget):
@@ -21,28 +23,73 @@ class GUI(QWidget):
     def __init__(self):
         super().__init__()
 
+        # Initialize window
         self.setWindowTitle('Client')
+        self.setGeometry(450, 300, 250, 100)
 
-        layout = QVBoxLayout()
-        self.setLayout(layout)
+        # Create window layout
+        self.main_layout = QVBoxLayout()
+        self.setLayout(self.main_layout)
 
+        # Show Entry Page
+        self.show_entry_page()
+
+        # Show screen
+        self.show()
+
+
+    def show_entry_page(self):
+        # Create Entry page
+        self.entry_page = Page()
+
+        # Shape the frame
+        self.entry_page.setFrameShape(QFrame.Shape.Box)
+        self.entry_page.setLineWidth(3)
+
+        # Create layout for the frame
+        entry_page_layout = QVBoxLayout()
+        self.entry_page.setLayout(entry_page_layout)
+
+        # Add label for Entry page
+        entry_label = QLabel('Welcome!')
+        self.main_layout.addWidget(entry_label)
+        self.entry_page.associate_widget(entry_label)
+
+        # Create 'Connect to server' button
         connect_button = QPushButton('Connect to Server')
         connect_button.clicked.connect(MainApp.connect_to_server)
-        layout.addWidget(connect_button)
 
-    def remove_layout(self):
-        if self.layout() is not None:
-            while self.layout().count():
-                item = self.layout().takeAt(0)
-                widget = item.widget()
-                if widget:
-                    widget.deleteLater()
-            self.layout().deleteLater()
+        # Add button to layout
+        entry_page_layout.addWidget(connect_button)
 
-    def show_logs(self):
-        self.remove_layout()
-        layout = QVBoxLayout()
-        self.setLayout(layout)
+        # Add frame to main layout
+        self.main_layout.addWidget(self.entry_page)
+
+    def show_logs_page(self):
+        # Remove Entry page
+        self.entry_page.remove()
+
+        # Create Logs page
+        logs_page = Page()
+
+        # Shape the frame
+        logs_page.setFrameShape(QFrame.Shape.Box)
+        logs_page.setLineWidth(3)
+
+        # Create layout for frame
+        logs_page_layout = QVBoxLayout()
+        logs_page.setLayout(logs_page_layout)
+
+        # Add Label to Logs page
+        label = QLabel('Virus Detection Logs:')
+        self.main_layout.addWidget(label)
+
+        # Add list view to Logs page
+        list_view = ItemsList()
+        logs_page_layout.addWidget(list_view)
+
+        # Add frame to main layout
+        self.main_layout.addWidget(logs_page)
 
 
 class MainApp:
@@ -52,14 +99,13 @@ class MainApp:
         app = QApplication(argv)
 
         cls.gui = GUI()
-        cls.gui.show()
 
         exit(app.exec())
     
     @classmethod
     def connect_to_server(cls):
         Client.connect_to_server()
-        cls.gui.show_logs()
+        cls.gui.show_logs_page()
 
 
 if __name__ == '__main__':
