@@ -11,11 +11,12 @@ Important - must for project requirements:
     Networking:
         - Create a protocol for the antivirus and its server - DONE
         - Create the Antivirus Server. Becuase a socket server is required.
-          The server will get notification from an attacked client and send it to all clients.
+          The server will get notification from an attacked client and send it to all clients. - DONE
         - Add multiclient functionallity to the server. Because a multiclient server is required - DONE
     Operating systems:
         - Make sure that the multiclient server is using multithreading - DONE
         - Make sure that the virus detector uses the OS API to detect the virus - (DONE, I think)
+        - Add to the antivirus server a database of the virus signatures (like process name or behavior)
     Security:
         - Add encryption to the antivirus server-client protocol
     GUI:
@@ -27,4 +28,3 @@ Nice to have:
 - Create a virus
 - Create a virus server that attacks the vulnerable web app and runs the virus on the victim PC
 - Add to the virus and its server command running functionallity
-- Add to the antivirus server a database of the virus signatures (like process name or behavior)
