@@ -33,7 +33,7 @@ class Server:
                 else:
                     print_colored('error', 'Unknown socket has connected! Neither client nor Anti Virus')
                     client.close()
-                    return
+                    continue
                 send(client, Messages.OK)
                 sock_thrd.start()
 
@@ -47,11 +47,12 @@ class Server:
                 client_msg = recv(client)
             except ProtocolError as e:
                 print_colored('error', e, cls.lock)
+                break
             print_colored('client', client_msg, cls.lock, client_id)
             if client_msg == Messages.CONNECTION_CLOSED:
                 break
         cls.clients.remove(client_id)
-        
+
 
     @classmethod
     def handle_anti_virus(cls, anti_virus: socket):
