@@ -14,16 +14,16 @@ colors = {
     'Error': Fore.LIGHTRED_EX
 }
 
-def colorful_str(color: str, prefix: str, msg: str) -> str:
-    return f"{Style.BRIGHT}{color}[{prefix}]: {msg}{Style.RESET_ALL}"
-
-def print_colored(prefix: str, msg: str, lock = None):
-    prefix = prefix.capitalize()
-    if prefix[-1] == ')':
-        color = colors.get(prefix[:-3], Fore.WHITE)
+def colorful_str(color: str, prefix: str, msg: str, sock_id: int = 0) -> str:
+    if sock_id == 0:
+        return f"{Style.BRIGHT}{color}[{prefix}]: {msg}{Style.RESET_ALL}"
     else:
-        color = colors.get(prefix, Fore.WHITE)
-    string = colorful_str(color, prefix, msg)
+        return f"{Style.BRIGHT}{color}[{prefix}({sock_id})]: {msg}{Style.RESET_ALL}"
+
+def print_colored(prefix: str, msg: str, lock = None, sock_id: int = 0):
+    prefix = prefix.capitalize()
+    color = colors.get(prefix, Fore.WHITE)
+    string = colorful_str(color, prefix, msg, sock_id)
     if lock == None:
         print(string)
     else:
