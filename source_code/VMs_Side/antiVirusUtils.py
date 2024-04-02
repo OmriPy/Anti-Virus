@@ -24,5 +24,8 @@ def kill_procs(pids: List[int]) -> bool:
         except PermissionError:
             print_colored('anti virus', 'Virus could not be killed')
             return False
+        except ProcessLookupError:
+            print_colored('anti virus', 'Another Anti Virus has alreay killed the virus')
+            return False
     print_colored('anti virus', 'Virus killed')
     return True
