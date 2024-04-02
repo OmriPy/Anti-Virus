@@ -46,13 +46,18 @@ class ClientSocket:
 
 
 class GUI(QWidget):
+
+    x = 450
+    y = 300
+    width = 150
+    height = 100
     
     def __init__(self):
         super().__init__()
 
         # Initialize window
         self.setWindowTitle('Client')
-        self.setGeometry(450, 300, 250, 100)
+        self.setGeometry(self.x, self.y, self.width, self.height)
 
         # Create window layout
         self.main_layout = QVBoxLayout()
@@ -71,25 +76,20 @@ class GUI(QWidget):
 
         # Shape the frame
         self.entry_page.setFrameShape(QFrame.Shape.Box)
-        self.entry_page.setLineWidth(1)
-
-        # Create layout for the frame
-        entry_page_layout = QVBoxLayout()
-        self.entry_page.setLayout(entry_page_layout)
 
         # Add label for Entry page
         entry_label = QLabel('Welcome!')
-        entry_page_layout.addWidget(entry_label)
+        self.entry_page.addWidget(entry_label)
 
         # Create 'Connect to server' button
         connect_button = QPushButton('Connect to Server')
         connect_button.clicked.connect(MainApp.connect_to_server)
-        entry_page_layout.addWidget(connect_button)
+        self.entry_page.addWidget(connect_button)
 
         # Create Exit button
         self.exit_button = QPushButton('Exit')
         self.exit_button.clicked.connect(MainApp.exit)
-        entry_page_layout.addWidget(self.exit_button)
+        self.entry_page.addWidget(self.exit_button)
 
         # Add frame to main layout
         self.main_layout.addWidget(self.entry_page)
@@ -99,29 +99,28 @@ class GUI(QWidget):
         # Remove Entry page
         self.entry_page.remove()
 
+        # Define width and height of page
+        width = 400
+        height = 300
+
         # Create Logs page
-        logs_page = Page()
+        logs_page = Page(width, height)
 
         # Shape the frame
         logs_page.setFrameShape(QFrame.Shape.Box)
-        # logs_page.setLineWidth(3)
-
-        # Create layout for frame
-        logs_page_layout = QVBoxLayout()
-        logs_page.setLayout(logs_page_layout)
 
         # Add Label to Logs page
         label = QLabel('Virus Detection Logs:')
-        logs_page_layout.addWidget(label)
+        logs_page.addWidget(label)
 
         # Add list view to Logs page
         self.list_view = ItemsList()
-        logs_page_layout.addWidget(self.list_view)
+        logs_page.addWidget(self.list_view)
 
         # Create Disconnect button
         disconnect_button = QPushButton('Disconnect')
         disconnect_button.clicked.connect(MainApp.disconnect)
-        logs_page_layout.addWidget(disconnect_button)
+        logs_page.addWidget(disconnect_button)
 
         # Add frame to main layout
         self.main_layout.addWidget(logs_page)
