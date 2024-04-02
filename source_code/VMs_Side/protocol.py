@@ -126,7 +126,7 @@ def send_and_recv(sock: socket, msg: str) -> str:
 
 class Messages:
 
-    OK = 'Your message was received and managed'
+    OK = 'OK'
     CONNECTION_CLOSED = 'The connection has been closed'
     CTRL_C = 'Exiting due to CTRL+C'
     CLIENT = 'This is Client'
