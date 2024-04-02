@@ -1,7 +1,5 @@
 Sorted by importance
 
 Project:
-* Whenever the client recieves a new message, add the data to the list view
 * Think about the ip the anti viruses and the clients connect to. on client VMs, the ip should not be localhost
-
 * printing, __str__, SocketID
