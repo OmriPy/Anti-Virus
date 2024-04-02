@@ -40,18 +40,21 @@ class Server:
     @classmethod
     def handle_client(cls, client: socket):
         client_id = cls.clients.add(client)
-        print_colored('server', Messages.connected('Client', client_id), cls.lock)
-        try:
-            send(client, 'This is a message from the server!')
-        except ProtocolError as e:
-            print_colored('error', e, cls.lock)
-            cls.clients.remove(client_id)
-            return
+        msg = Messages.connected('Client', client_id)
+        print_colored('server', msg, cls.lock)
+        while True:
+            client_msg = recv(client)
+            print_colored('client', sock_id=client_id, msg=client_msg, lock=cls.lock)
+            if client_msg == Messages.CONNECTION_CLOSED:
+                break
+        cls.clients.remove(client_id)
+        
 
     @classmethod
     def handle_anti_virus(cls, anti_virus: socket):
         anti_virus_id = cls.anti_viruses.add(anti_virus)
-        print_colored('server', Messages.connected('Anti Virus', anti_virus_id), cls.lock)
+        msg = Messages.connected('Anti Virus', anti_virus_id)
+        print_colored('server', msg, cls.lock)
         while True:
             try:
                 anti_virus_msg = recv(anti_virus)
@@ -59,12 +62,11 @@ class Server:
                 print_colored('error', e, cls.lock)
                 cls.anti_viruses.remove(anti_virus_id)
                 return
-            print_colored(f'anti virus({anti_virus_id})', anti_virus_msg, cls.lock)
+            print_colored('anti virus', sock_id=anti_virus_id, msg=anti_virus_msg, lock=cls.lock)
             send(anti_virus, Messages.OK)
             if anti_virus_msg == Messages.CONNECTION_CLOSED:
                 break
-            # TODO: Add here the notifying the clients about the virus detection,
-            # also change the client.py code accordingly
+            cls.clients.send_to_all(anti_virus_msg)
         cls.anti_viruses.remove(anti_virus_id)
 
 
