@@ -43,8 +43,11 @@ class Server:
         msg = Messages.connected('Client', client_id)
         print_colored('server', msg, cls.lock)
         while True:
-            client_msg = recv(client)
-            print_colored('client', sock_id=client_id, msg=client_msg, lock=cls.lock)
+            try:
+                client_msg = recv(client)
+            except ProtocolError as e:
+                print_colored('error', e, cls.lock)
+            print_colored('client', client_msg, cls.lock, client_id)
             if client_msg == Messages.CONNECTION_CLOSED:
                 break
         cls.clients.remove(client_id)
@@ -62,7 +65,7 @@ class Server:
                 print_colored('error', e, cls.lock)
                 cls.anti_viruses.remove(anti_virus_id)
                 return
-            print_colored('anti virus', sock_id=anti_virus_id, msg=anti_virus_msg, lock=cls.lock)
+            print_colored('anti virus', anti_virus_msg, cls.lock, anti_virus_id)
             send(anti_virus, Messages.OK)
             if anti_virus_msg == Messages.CONNECTION_CLOSED:
                 break
