@@ -1,6 +1,7 @@
 Sorted by importance
 
 Project:
+* Change back the names of the private variables you named to names you like because it's just VSCode thinking they're functions
 * Change names according to python naming convention
 * Change class Page to class Screen
 * Set each screen to be exactly at the middle of the entire screen
