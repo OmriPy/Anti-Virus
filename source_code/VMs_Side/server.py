@@ -1,4 +1,4 @@
-from serverUtils import *
+from server_utils import *
 from threading import Thread, Lock
 
 class Server:
@@ -64,8 +64,7 @@ class Server:
                 anti_virus_msg = recv(anti_virus)
             except ProtocolError as e:
                 print_colored('error', e, cls.lock)
-                cls.anti_viruses.remove(anti_virus_id)
-                return
+                break
             print_colored('anti virus', anti_virus_msg, cls.lock, anti_virus_id)
             send(anti_virus, Messages.OK)
             if anti_virus_msg == Messages.CONNECTION_CLOSED:
