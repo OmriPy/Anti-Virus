@@ -30,5 +30,4 @@ Nice to have:
 - Create a virus
 - Create a virus server that attacks the vulnerable web app and runs the virus on the victim PC
 - Add to the virus and its server command running functionallity
-- printing, __str__, SocketID
 - Think about changing the `colored printing` to use `SocketID` object in order to implement `sock_id` more efficiently
