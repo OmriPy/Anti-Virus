@@ -1,4 +1,4 @@
-from clientUtils import *
+from client_utils import *
 from sys import argv
 from threading import Thread
 
@@ -47,87 +47,92 @@ class ClientSocket:
 
 class GUI(QWidget):
 
-    x = 450
-    y = 300
-    width = 150
-    height = 100
-    
-    def __init__(self):
+    width = 200
+    height = 125
+
+    def __init__(self, app: QApplication):
         super().__init__()
+
+        self.app = app
 
         # Initialize window
         self.setWindowTitle('Client')
-        self.setGeometry(self.x, self.y, self.width, self.height)
 
         # Create window layout
         self.main_layout = QVBoxLayout()
         self.setLayout(self.main_layout)
 
         # Show Entry Page
-        self.show_entry_page()
+        self.show_entry_screen()
 
         # Show screen
         self.show()
 
 
-    def show_entry_page(self):
+    def show_entry_screen(self):
         # Create Entry page
-        self.entry_page = Page()
+        self.entry_screen = Screen(self)
+
+        # Center the screen
+        self.entry_screen.center()
 
         # Shape the frame
-        self.entry_page.setFrameShape(QFrame.Shape.Box)
+        self.entry_screen.setFrameShape(QFrame.Shape.Box)
 
         # Add label for Entry page
         entry_label = QLabel('Welcome!')
-        self.entry_page.addWidget(entry_label)
+        self.entry_screen.add_widget(entry_label)
 
         # Create 'Connect to server' button
         connect_button = QPushButton('Connect to Server')
         connect_button.clicked.connect(MainApp.connect_to_server)
-        self.entry_page.addWidget(connect_button)
+        self.entry_screen.add_widget(connect_button)
 
         # Create Exit button
         self.exit_button = QPushButton('Exit')
         self.exit_button.clicked.connect(MainApp.exit)
-        self.entry_page.addWidget(self.exit_button)
+        self.entry_screen.add_widget(self.exit_button)
 
         # Add frame to main layout
-        self.main_layout.addWidget(self.entry_page)
+        self.main_layout.addWidget(self.entry_screen)
 
 
-    def show_logs_page(self):
+    def show_logs_screen(self):
         # Remove Entry page
-        self.entry_page.remove()
+        self.entry_screen.remove()
 
         # Define width and height of page
         width = 400
         height = 300
 
         # Create Logs page
-        logs_page = Page(width, height)
+        logs_screen = Screen(self, width, height)
+
+        # Center the screen
+        logs_screen.center()
 
         # Shape the frame
-        logs_page.setFrameShape(QFrame.Shape.Box)
+        logs_screen.setFrameShape(QFrame.Shape.Box)
 
         # Add Label to Logs page
         label = QLabel('Virus Detection Logs:')
-        logs_page.addWidget(label)
+        logs_screen.add_widget(label)
 
         # Add list view to Logs page
         self.list_view = ItemsList()
-        logs_page.addWidget(self.list_view)
+        logs_screen.add_widget(self.list_view)
 
         # Create Disconnect button
         disconnect_button = QPushButton('Disconnect')
         disconnect_button.clicked.connect(MainApp.disconnect)
-        logs_page.addWidget(disconnect_button)
+        logs_screen.add_widget(disconnect_button)
 
         # Add frame to main layout
-        self.main_layout.addWidget(logs_page)
+        self.main_layout.addWidget(logs_screen)
 
 
     def add_data(self, data: str):
-        self.list_view.addData(data)
+        self.list_view.add_data(data)
 
 
 class MainApp:
@@ -136,7 +141,7 @@ class MainApp:
     def run(cls):
         app = QApplication(argv)
 
-        cls.gui = GUI()
+        cls.gui = GUI(app)
 
         exit(app.exec())
     
@@ -144,7 +149,7 @@ class MainApp:
     def connect_to_server(cls):
         client_sock_thrd = Thread(target=ClientSocket.connect_to_server)
         client_sock_thrd.start()
-        cls.gui.show_logs_page()
+        cls.gui.show_logs_screen()
 
     @classmethod
     def disconnect(cls):
