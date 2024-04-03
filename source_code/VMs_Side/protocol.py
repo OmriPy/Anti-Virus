@@ -11,7 +11,7 @@ class Protocol:
 
         sock = socket(AF_INET, SOCK_STREAM)
         try:
-            sock.bind((IP, cls.PORT))
+            sock.bind((IP, cls.PORT,))
         except OSError as e:
             if e.errno == 48:
                 print_colored('error', 'Try again later')
