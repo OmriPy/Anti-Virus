@@ -2,6 +2,6 @@ Sorted by importance
 
 Project:
 * Do something about the fact that ProtocolError is too much generic to understand what it means
-* Change class Page to class Screen
+* Change `class Page` to `class Screen`
 * Set each screen to be exactly at the middle of the entire screen
-* Make anti_virus.py work also on windows (the equivalent of ps -a in windows is tasklist)
+* Make `anti_virus.py` work also on windows (the equivalent of `ps -a` in windows is `tasklist`)
