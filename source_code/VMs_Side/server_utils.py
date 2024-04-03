@@ -13,16 +13,16 @@ class Sockets:
         """Management of list of sockets"""
 
         self.sockets: List[SocketID] = []
-        self.current_id = 1
+        self.id = 1
 
 
     def add(self, sock: socket) -> int:
-        sock_id = self.current_id
+        sock_id = self.id
         self.sockets.append(SocketID(sock, sock_id))
-        self.current_id += 1
+        self.id += 1
         return sock_id
 
-    def get_index(self, sock_id: int) -> int:
+    def _get_index(self, sock_id: int) -> int:
         for i in range(len(self.sockets)):
             if self.sockets[i].sock_id == sock_id:
                 return i
@@ -30,7 +30,7 @@ class Sockets:
         return -1
 
     def remove(self, sock_id: int):
-        index = self.get_index(sock_id)
+        index = self._get_index(sock_id)
         if index == -1:
             return
         sock = self.sockets[index].sock
