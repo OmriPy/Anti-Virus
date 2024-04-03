@@ -1,11 +1,11 @@
-from antiVirusUtils import *
+from anti_virus_utils import *
 import time
 
 class AntiVirus:
 
     server_ip = '127.0.0.1'
     virus = 'lab_rat.py'
-    delay = 10
+    delay = 1
     possibilities: Dict[Tuple[bool, bool], str] = {
         (False, False): 'No virus detected',
         (True, True): 'The virus was detected and killed successfully',
