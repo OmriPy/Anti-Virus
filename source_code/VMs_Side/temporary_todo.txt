@@ -1,11 +1,7 @@
 Sorted by importance
 
 Project:
-* Think if you should replace `if lock != None` with `if lock is not None` in colored printing
-* Change back the names of the private variables you named to names you like because it's just VSCode thinking they're functions
-* Change names according to python naming convention
-* Change class Page to class Screen
-* Set each screen to be exactly at the middle of the entire screen
 * Think if you should handle ProtocolError-s inside protocol.py other than repeating the handling code
 * Do something about the fact that ProtocolError is too much generic to understand what it means
 * Make anti_virus.py work also on windows (the equivalent of ps -a in windows is tasklist)
+* Add `class Label(QLabel)`
