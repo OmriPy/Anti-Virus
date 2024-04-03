@@ -13,6 +13,8 @@ Important - must for project requirements:
         - Create the Antivirus Server. Becuase a socket server is required.
           The server will get notification from an attacked client and send it to all clients. - DONE
         - Add multiclient functionallity to the server. Because a multiclient server is required - DONE
+        - Think about the ip the anti viruses and the clients connect to. on client VMs, the ip should not be localhost
+
     Operating systems:
         - Make sure that the multiclient server is using multithreading - DONE
         - Make sure that the virus detector uses the OS API to detect the virus - (DONE, I think)
