@@ -1,6 +1,7 @@
 Sorted by importance
 
 Project:
+* Think if you should replace `if lock != None` with `if lock is not None` in colored printing
 * Change back the names of the private variables you named to names you like because it's just VSCode thinking they're functions
 * Change names according to python naming convention
 * Change class Page to class Screen
