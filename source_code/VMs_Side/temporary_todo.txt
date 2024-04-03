@@ -1,6 +1,7 @@
 Sorted by importance
 
 Project:
+* Change names according to python naming convention
 * Change class Page to class Screen
 * Set each screen to be exactly at the middle of the entire screen
 * Think if you should handle ProtocolError-s inside protocol.py other rhan repeating the handling code
