@@ -36,7 +36,7 @@ class Sockets:
         sock = self.sockets[index].sock
         self.sockets.pop(index)
         sock.close()
-    
+
     def send_to_all(self, data: str):
         for sockID in self.sockets:
             send(sockID.sock, data)
