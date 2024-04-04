@@ -29,7 +29,7 @@ class Protocol:
 
         sock = socket(AF_INET, SOCK_STREAM)
         try:
-            sock.connect((IP, cls.PORT))
+            sock.connect((IP, cls.PORT,))
         except ConnectionRefusedError:
             print_colored('error', 'The server is not running')
             exit(0)
@@ -40,19 +40,15 @@ class Protocol:
 
 class ProtocolError(Exception):
 
-    FLAWED = 'The given packet is flawed according to the protocol'
-    BIGGER_THAN_MAX = 'Given data is bigger than the maximum data size'
-    HAS_DELIMITER = 'Packet contains DELIMITER string inside its data field'
-
     def __init__(self, err: str):
         super().__init__(err)
 
 
+
 ####    Packet Structure    ####
 
-# The structure:    DATA_SIZE|DATA
-
 class Packet:
+    """The structure: DATA_SIZE|DATA"""
 
     DELIMITER = '|'
     EXACT_SIZE_LENGTH = 6   # Exact amount of bytes the data_size field has
@@ -69,32 +65,35 @@ class Packet:
             raise ProtocolError(ProtocolError.BIGGER_THAN_MAX)
         
         return str(size).zfill(cls.EXACT_SIZE_LENGTH) + cls.DELIMITER + data
+    
+    @classmethod
+    def flawed(cls, packet: str) -> Tuple[bool, str]:
+        if packet == '':
+            return (True, 'Packet is empty')
+        elif cls.DELIMITER not in packet:
+            return (True, 'No delimiter found in packet')
+        elif packet.count(cls.DELIMITER) > 1:
+            return (True, 'Delimiter found multiple times in packet instead of once as expected')
+        elif len(packet) > cls.MAX_TOTAL_SIZE:
+            return (True, 'Packet is bigger than maximum possible size')
+        size, data = packet.split(cls.DELIMITER)
+        if len(size) != cls.EXACT_SIZE_LENGTH:
+            return (True, 'The length of the size field is not the expected length')
+        elif len(data) > cls.MAX_DATA_LENGTH:
+            return (True, 'The length of the data field is bigger than maximum possible size')
+        elif not size.isnumeric():
+            return (True, 'The size field is not numeric')
+        elif int(size) != len(data):
+            return (True, 'The length of the data field does not equal the size field\'s value')
+        return (False, '')
 
     @classmethod
-    def flawed(cls, packet: str) -> bool:
-        """Returns False if the packet is well structured (no errors), and returns True if it has an error"""
+    def unpack(cls, packet: str) -> Tuple[str, str]:
+        "Unpacks the packet into its fields and returns it, if it's a valid one. If it isn't, ProtocolError is raised"
 
-        if cls.DELIMITER not in packet:
-            return True
-
-        try:
-            size, data = packet.split(cls.DELIMITER)
-        except ValueError:
-            raise ProtocolError(ProtocolError.HAS_DELIMITER)
-
-        return \
-            len(packet) > cls.MAX_TOTAL_SIZE or \
-            len(size) != cls.EXACT_SIZE_LENGTH or \
-            len(data) > cls.MAX_DATA_LENGTH or \
-            not size.isnumeric() or \
-            int(size) != len(data)
-
-    @classmethod
-    def parse(cls, packet: str) -> Tuple[str, str]:
-        "Parses the packet into its fields and returns it, if it's a valid one. If it isn't, ProtocolError is raised"
-
-        if cls.flawed(packet):
-            raise ProtocolError(ProtocolError.FLAWED)
+        flawed, reason = cls.flawed(packet)
+        if flawed:
+            raise ProtocolError(reason)
 
         return tuple(packet.split(cls.DELIMITER))
 
@@ -115,7 +114,7 @@ def recv(sock: socket) -> str:
         msg = sock.recv(Packet.MAX_TOTAL_SIZE).decode()
     except ConnectionResetError as e:
         print_colored('error', e)
-    msg = Packet.parse(msg)
+    msg = Packet.unpack(msg)
 
     return msg[1]
 
