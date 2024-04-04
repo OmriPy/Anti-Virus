@@ -1,6 +1,7 @@
 Sorted by importance
 
 Project:
+* Add description to Packet.flawed()
 * Make anti_virus.py work also on windows (the equivalent of ps -a in windows is tasklist)
 * Add `class Label(QLabel)`
 * Add `class Button(QPushButton)`
