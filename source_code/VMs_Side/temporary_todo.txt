@@ -1,7 +1,7 @@
 Sorted by importance
 
 Project:
-* Think if you should handle ProtocolError-s inside protocol.py other than repeating the handling code
-* Do something about the fact that ProtocolError is too much generic to understand what it means
 * Make anti_virus.py work also on windows (the equivalent of ps -a in windows is tasklist)
 * Add `class Label(QLabel)`
+* Add `class Button(QPushButton)`
+* Do something about the fact that there is an error if the client connects to the server but it is not running
