@@ -1,5 +1,8 @@
 from protocol import *
-import os, subprocess
+import os, subprocess, platform
+
+def operating_system() -> str:
+    return platform.system() # Windows, Linux, Darwin
 
 def output_of_command(cmd: str) -> str:
     return subprocess.check_output(cmd, shell=True).decode()
@@ -14,6 +17,10 @@ def filter_matches(proc_name: str, lst: List[str]) -> List[str]:
 def find_pids(processes: List[str]) -> List[int]:
     pids = []
     for proc in processes:
+        '''if operating_system() == 'Windows':
+            pids.append(int(proc[?]))
+        else:
+            pids.append(int(proc[:5]))'''
         pids.append(int(proc[:5]))
     return pids
 
@@ -25,7 +32,7 @@ def kill_procs(pids: List[int]) -> bool:
             print_colored('anti virus', 'Virus could not be killed')
             return False
         except ProcessLookupError:
-            print_colored('anti virus', 'Another Anti Virus has alreay killed the virus')
+            print_colored('anti virus', 'Another Anti Virus has already killed the virus')
             return False
     print_colored('anti virus', 'Virus killed')
     return True
