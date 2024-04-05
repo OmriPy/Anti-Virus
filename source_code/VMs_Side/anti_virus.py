@@ -23,7 +23,7 @@ class AntiVirus:
                 print_colored('server', server_msg)
                 print_colored('error', 'The server sent a message that is not OK. Exiting')
                 return
-            
+
             # Main loop
             while True:
                 try:
@@ -37,7 +37,7 @@ class AntiVirus:
                     print_colored('anti virus', Messages.CONNECTION_CLOSED)
                     print_colored('info', Messages.CTRL_C)
                     return
-                
+
                 # Perform virus scanning and send results to the server
                 virus_proc = FindAndKillProcess(cls.virus)
                 killing_result = virus_proc.kill()
