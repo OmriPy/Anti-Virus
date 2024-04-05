@@ -5,7 +5,7 @@ from threading import Thread
 class ClientSocket:
 
     server_ip = '127.0.0.1'
-    
+
     @classmethod
     def connect_to_server(cls):
         # Connect to server
@@ -15,7 +15,7 @@ class ClientSocket:
         if server_msg != Messages.OK:
             print_colored('error', 'The server sent a message that is not OK. Exiting')
             MainApp.disconnect()
-        
+
         # Wait for data
         while True:
             try:
@@ -30,7 +30,7 @@ class ClientSocket:
             except OSError as e:
                 if e.errno == 9:    # If the recv() function was interrupted due to thread termination
                     exit(0)
-            
+
             # Handle virus message
             print_colored('server', server_msg)
             MainApp.add_data(server_msg)
@@ -144,22 +144,22 @@ class MainApp:
         cls.gui = GUI(app)
 
         exit(app.exec())
-    
+
     @classmethod
     def connect_to_server(cls):
-        client_sock_thrd = Thread(target=ClientSocket.connect_to_server)
+        client_sock_thrd = Thread(target=ClientSocket.connect_to_server, daemon=True)
         client_sock_thrd.start()
         cls.gui.show_logs_screen()
 
     @classmethod
-    def disconnect(cls):
-        ClientSocket.close()
-        cls.exit()
-    
-    @classmethod
     def add_data(cls, data: str):
         cls.gui.add_data(data)
     
+    @classmethod
+    def disconnect(cls):
+        ClientSocket.close()
+        cls.exit()
+
     @classmethod
     def exit(cls):
         print_colored('info', 'Exiting')
