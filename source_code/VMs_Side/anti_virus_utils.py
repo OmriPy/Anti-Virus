@@ -22,7 +22,7 @@ class FindAndKillProcess:
     }
 
     commands: Dict[str, str] = {
-        OperatingSystems.WINDOWS: 'tasklist',
+        OperatingSystems.WINDOWS: 'tasklist /v',
         OperatingSystems.MAC_OS: 'ps -A',
         OperatingSystems.LINUX: 'ps -A'
     }
@@ -59,7 +59,9 @@ class FindAndKillProcess:
 
     def _all_procs(self) -> List[str]:
         is_windows = self.os == OperatingSystems.WINDOWS
-        all_procs = subprocess.check_output(self.cmd, shell=True, universal_newlines = is_windows).decode()
+        all_procs = subprocess.check_output(self.cmd, shell=True, universal_newlines = is_windows)
+        if not is_windows:
+            all_procs = all_procs.decode()
         return all_procs.split('\n')
 
     def _filter_target(self, all_procs: List[str]) -> List[str]:
