@@ -68,24 +68,32 @@ class Packet:
     
     @classmethod
     def flawed(cls, packet: str) -> Tuple[bool, str]:
+        """Returns a tuple of flawed & reason.
+        
+        Flawed - boolean representing whether the packet is flawed acoording to the protocol or not.
+        True if it is, False otherwise.
+        
+        Reason - string representing the reason to why the packet is flawed. If it isn't, Reason is empty.
+        """
+
         if packet == '':
-            return (True, 'Packet is empty')
+            return True, 'Packet is empty'
         elif cls.DELIMITER not in packet:
-            return (True, 'No delimiter found in packet')
+            return True, 'No delimiter found in packet'
         elif packet.count(cls.DELIMITER) > 1:
-            return (True, 'Delimiter found multiple times in packet instead of once as expected')
+            return True, 'Delimiter found multiple times in packet instead of once as expected'
         elif len(packet) > cls.MAX_TOTAL_SIZE:
-            return (True, 'Packet is bigger than maximum possible size')
+            return True, 'Packet is bigger than maximum possible size'
         size, data = packet.split(cls.DELIMITER)
         if len(size) != cls.EXACT_SIZE_LENGTH:
-            return (True, 'The length of the size field is not the expected length')
+            return True, 'The length of the size field is not the expected length'
         elif len(data) > cls.MAX_DATA_LENGTH:
-            return (True, 'The length of the data field is bigger than maximum possible size')
+            return True, 'The length of the data field is bigger than maximum possible size'
         elif not size.isnumeric():
-            return (True, 'The size field is not numeric')
+            return True, 'The size field is not numeric'
         elif int(size) != len(data):
-            return (True, 'The length of the data field does not equal the size field\'s value')
-        return (False, '')
+            return True, 'The length of the data field does not equal the size field\'s value'
+        return False, ''
 
     @classmethod
     def unpack(cls, packet: str) -> Tuple[str, str]:
