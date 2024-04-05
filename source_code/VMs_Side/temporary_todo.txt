@@ -1,8 +1,8 @@
 Sorted by importance
 
 Project:
-* Add description to Packet.flawed()
-* Make anti_virus.py work also on windows (the equivalent of ps -a in windows is tasklist)
-* Add `class Label(QLabel)`
-* Add `class Button(QPushButton)`
-* Do something about the fact that there is an error if the client connects to the server but it is not running
+*   When running the Anti Virus on Windows, the subprocess mothod's output is str probably because of my code
+    (universal_newlines = is_windows) and not because of the operating system. Check that
+*   Add `class Label(QLabel)`
+*   Add `class Button(QPushButton)`
+*   Do something about the fact that there is an error if the client connects to the server but it is not running
