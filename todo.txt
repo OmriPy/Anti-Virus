@@ -17,7 +17,7 @@ Important - must for project requirements:
     Operating systems:
         - Make sure that the multiclient server is using multithreading - DONE
         - Make sure that the virus detector uses the OS API to detect the virus - (DONE, I think)
-    Database:
+    Database (use the sqlalchemy module):
         - Add to the antivirus server a database of Users
         - Implement registration and login screen in client
         - At least 4 input fields in registration
