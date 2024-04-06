@@ -23,6 +23,9 @@ class AntiVirus:
                 print_colored('server', server_msg)
                 print_colored('error', 'The server sent a message that is not OK. Exiting')
                 return
+            
+            # Print info
+            print_colored('info', f'Virus is: {cls.virus}')
 
             # Main loop
             while True:
@@ -40,10 +43,19 @@ class AntiVirus:
 
                 # Perform virus scanning and send results to the server
                 virus_proc = FindAndKillProcess(cls.virus)
-                killing_result = virus_proc.kill()
+                try:
+                    killing_result = virus_proc.hunt()
+                except KeyboardInterrupt:
+                    print_colored('anti virus', 'Scanning was interrupted')
+                    print_colored('info', Messages.CTRL_C)
+                    return
                 if killing_result[0]:   # If a virus was found
                     msg = cls.possibilities[killing_result]
-                    server_msg = send_and_recv(anti_virus, msg)
+                    try:
+                        server_msg = send_and_recv(anti_virus, msg)
+                    except ProtocolError as e:
+                        print_colored('error', e)
+                        return
                     print_colored('server', server_msg)
 
 
