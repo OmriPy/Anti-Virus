@@ -7,7 +7,7 @@ class SocketID:
         self.sock_id = id
 
 
-class Sockets:
+class SocketsList:
 
     def __init__(self):
         """Management of list of sockets"""
