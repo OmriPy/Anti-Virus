@@ -43,6 +43,7 @@ class ProtocolError(Exception):
     def __init__(self, err: str):
         super().__init__(err)
 
+        self.name = type(self).__name__
 
 
 ####    Packet Structure    ####
