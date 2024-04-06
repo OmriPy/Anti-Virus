@@ -4,8 +4,8 @@ from threading import Thread, Lock
 class Server:
 
     lock = Lock()
-    clients = Sockets()
-    anti_viruses = Sockets()
+    clients = SocketsList()
+    anti_viruses = SocketsList()
 
     @classmethod
     def run(cls):
