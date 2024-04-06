@@ -23,8 +23,6 @@ class AntiVirus:
                 print_colored('server', server_msg)
                 print_colored('error', 'The server sent a message that is not OK. Exiting')
                 return
-            
-            # Print info
             print_colored('info', f'Virus is: {cls.virus}')
 
             # Main loop
