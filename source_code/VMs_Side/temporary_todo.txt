@@ -1,8 +1,7 @@
 Sorted by importance
 
 Project:
-*   When running the Anti Virus on Windows, the subprocess mothod's output is str probably because of my code
-    (universal_newlines = is_windows) and not because of the operating system. Check that
+*   On your windows vm, check that the processes that the subprocess.run() is killing, are actually the virus
 *   Add `class Label(QLabel)`
 *   Add `class Button(QPushButton)`
 *   Do something about the fact that there is an error if the client connects to the server but it is not running
