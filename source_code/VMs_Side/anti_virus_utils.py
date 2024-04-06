@@ -29,14 +29,14 @@ class FindAndKillProcess:
 
 
     def __init__(self, proc_name: str):
-        """Object that finds the given process and kills it when killed() is called"""
+        """Object that finds the given process and kills it when hunt() is called"""
 
         self.target_proc = proc_name
         self.os = OperatingSystems.active()
         self.cmd = self.commands[self.os]
 
 
-    def kill(self) -> Tuple[bool, bool]:
+    def hunt(self) -> Tuple[bool, bool]:
         """Finds the given process and kills it. Returns a tuple containing two booleans: Found & Killed.
         
         Returns (False, False) if the process was not detected,
@@ -58,10 +58,7 @@ class FindAndKillProcess:
 
 
     def _all_procs(self) -> List[str]:
-        is_windows = self.os == OperatingSystems.WINDOWS
-        all_procs = subprocess.check_output(self.cmd, shell=True, universal_newlines = is_windows)
-        if not is_windows:
-            all_procs = all_procs.decode()
+        all_procs = subprocess.check_output(self.cmd, shell=True).decode()
         return all_procs.split('\n')
 
     def _filter_target(self, all_procs: List[str]) -> List[str]:
@@ -75,22 +72,28 @@ class FindAndKillProcess:
         pids = []
         for proc in target_procs:
             words = proc.split()
-            #print_colored('info', f'{proc = }')
             pid_index = self.pid_index[self.os]
-            #print_colored('info', f'{pid_index = }')
-            #print_colored('info', f'{words[pid_index] = }')
             pids.append(int(words[pid_index]))
         return pids
 
     def _kill_target_procs(self, pids: List[int]) -> bool:
-        for pid in pids:
-            try:
-                os.kill(pid, 9)    # 9 = signal.SIGKILL
-            except PermissionError:
-                print_colored('anti virus', 'Virus could not be killed')
-                return False
-            except ProcessLookupError:
-                print_colored('anti virus', 'Another Anti Virus has already killed the virus')
-                return False
+        is_windows = self.os == OperatingSystems.WINDOWS
+        if is_windows:
+            for pid in pids:
+                try:
+                    subprocess.run(["taskkill", "/F", "/T", "/PID", str(pid)], check=True)
+                except subprocess.CalledProcessError as e:
+                    print_colored('error', f'Virus could not be killed: {e}')
+                    return False
+        else:
+            for pid in pids:
+                try:
+                    os.kill(pid, 9)    # 9 = signal.SIGKILL
+                except PermissionError:
+                    print_colored('error', 'Virus could not be killed')
+                    return False
+                except ProcessLookupError:
+                    print_colored('error', 'Another Anti Virus has already killed the virus')
+                    return False
         print_colored('anti virus', 'Virus killed')
         return True
