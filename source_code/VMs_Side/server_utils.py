@@ -13,13 +13,13 @@ class Sockets:
         """Management of list of sockets"""
 
         self.sockets: List[SocketID] = []
-        self.id = 1
+        self._current_id = 1
 
 
     def add(self, sock: socket) -> int:
-        sock_id = self.id
+        sock_id = self._current_id
         self.sockets.append(SocketID(sock, sock_id))
-        self.id += 1
+        self._current_id += 1
         return sock_id
 
     def _get_index(self, sock_id: int) -> int:
