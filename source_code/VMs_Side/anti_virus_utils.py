@@ -81,7 +81,7 @@ class FindAndKillProcess:
         if is_windows:
             for pid in pids:
                 try:
-                    subprocess.run(["taskkill", "/F", "/T", "/PID", str(pid)], check=True)
+                    subprocess.run(['taskkill', '/F', '/T', '/PID', str(pid)], check=True)
                 except subprocess.CalledProcessError as e:
                     print_colored('error', f'Virus could not be killed: {e}')
                     return False
