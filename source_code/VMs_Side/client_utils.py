@@ -1,5 +1,7 @@
+from PyQt6.QtCore import Qt
 from protocol import *
-from PyQt6.QtWidgets import QApplication, QWidget, QVBoxLayout, QPushButton, QFrame, QLabel, QListWidget, QListWidgetItem
+from PyQt6.QtWidgets import (QApplication, QWidget, QVBoxLayout,
+                            QPushButton, QFrame, QLabel, QListWidget, QListWidgetItem, QMessageBox)
 
 class Screen(QFrame):
 
@@ -56,3 +58,34 @@ class ItemsList(QListWidget):
     def add_data(self, data: str):
         self.insertItem(self.row_num, QListWidgetItem(data))
         self.row_num += 1
+
+
+class Label(QLabel):
+
+    def __init__(self, text: str = ''):
+        super().__init__(text)
+
+
+class Button(QPushButton):
+
+    def __init__(self, text: str = '', func: Callable = None):
+        super().__init__(text)
+
+        if func != None:
+            self.connect(func) 
+    
+    def connect(self, func: Callable):
+        self.clicked.connect(func)
+
+
+'''class PopUp(QMessageBox):
+
+    def __init__(self, window: QWidget, title: str, msg: str, func: Callable):
+        super().__init__(window)
+
+        self.setWindowTitle(title)
+        self.setText(msg)
+        button = self.exec()
+
+        if button == QMessageBox.StandardButton.Ok:
+            func()'''
