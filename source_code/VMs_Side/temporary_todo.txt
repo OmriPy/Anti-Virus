@@ -1,9 +1,5 @@
 Sorted by importance
 
 Project:
-*   Make self.current_id private, meaning self._current_id
-*   Settle for something regarding the windows problem
-*   On your windows vm, check that the processes that the subprocess.run() is killing, are actually the virus
-*   Add `class Label(QLabel)`
-*   Add `class Button(QPushButton)`
+*   Implement Users in client
 *   Do something about the fact that there is an error if the client connects to the server but it is not running
