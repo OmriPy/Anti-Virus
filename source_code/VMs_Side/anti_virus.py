@@ -27,18 +27,6 @@ class AntiVirus:
 
             # Main loop
             while True:
-                try:
-                    time.sleep(cls.delay)
-                except KeyboardInterrupt:
-                    try:
-                        send_and_recv(anti_virus, Messages.CONNECTION_CLOSED)
-                    except ProtocolError as e:
-                        print_colored('error', e)
-                        return
-                    print_colored('anti virus', Messages.CONNECTION_CLOSED)
-                    print_colored('info', Messages.CTRL_C)
-                    return
-
                 # Perform virus scanning and send results to the server
                 virus_proc = FindAndKillProcess(cls.virus)
                 try:
@@ -55,6 +43,18 @@ class AntiVirus:
                         print_colored('error', e)
                         return
                     print_colored('server', server_msg)
+
+                try:
+                    time.sleep(cls.delay)
+                except KeyboardInterrupt:
+                    try:
+                        send_and_recv(anti_virus, Messages.CONNECTION_CLOSED)
+                    except ProtocolError as e:
+                        print_colored('error', e)
+                        return
+                    print_colored('anti virus', Messages.CONNECTION_CLOSED)
+                    print_colored('info', Messages.CTRL_C)
+                    return
 
 
 if __name__ == '__main__':
