@@ -13,12 +13,6 @@ class OperatingSystems:
         return platform.system()
 
 
-def pids_name(procs) -> Dict[str, int]:
-    pids_names = {}
-    for line in procs:
-        words = line.split()
-        print(words)
-
 class FindAndKillProcess:
 
     pid_index: Dict[str, int] = {
@@ -50,7 +44,6 @@ class FindAndKillProcess:
         and (True, True) if it was detected and killed successfully."""
         
         all_procs = self._all_procs()
-        pids_name(all_procs)
         found_procs = self._filter_target(all_procs)
         if len(found_procs) == 0:
             found = False
@@ -88,7 +81,7 @@ class FindAndKillProcess:
         if is_windows:
             for pid in pids:
                 try:
-                    subprocess.run(['taskkill', '/F', '/T', '/PID', str(pid)], check=True)
+                    subprocess.run(['taskkill', '/F', '/T', '/PID', f'{pid}'], check=True)
                 except subprocess.CalledProcessError as e:
                     print_colored('error', f'Virus could not be killed: {e}')
                     return False
