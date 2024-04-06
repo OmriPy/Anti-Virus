@@ -80,17 +80,15 @@ class GUI(QWidget):
         self.entry_screen.setFrameShape(QFrame.Shape.Box)
 
         # Add label for Entry page
-        entry_label = QLabel('Welcome!')
+        entry_label = Label('Welcome!')
         self.entry_screen.add_widget(entry_label)
 
         # Create 'Connect to server' button
-        connect_button = QPushButton('Connect to Server')
-        connect_button.clicked.connect(MainApp.connect_to_server)
+        connect_button = Button('Connect to Server', MainApp.connect_to_server)
         self.entry_screen.add_widget(connect_button)
 
         # Create Exit button
-        self.exit_button = QPushButton('Exit')
-        self.exit_button.clicked.connect(MainApp.exit)
+        self.exit_button = Button('Exit', MainApp.exit)
         self.entry_screen.add_widget(self.exit_button)
 
         # Add frame to main layout
@@ -115,7 +113,7 @@ class GUI(QWidget):
         logs_screen.setFrameShape(QFrame.Shape.Box)
 
         # Add Label to Logs page
-        label = QLabel('Virus Detection Logs:')
+        label = Label('Virus Detection Logs:')
         logs_screen.add_widget(label)
 
         # Add list view to Logs page
@@ -123,8 +121,7 @@ class GUI(QWidget):
         logs_screen.add_widget(self.list_view)
 
         # Create Disconnect button
-        disconnect_button = QPushButton('Disconnect')
-        disconnect_button.clicked.connect(MainApp.disconnect)
+        disconnect_button = Button('Disconnect', MainApp.disconnect)
         logs_screen.add_widget(disconnect_button)
 
         # Add frame to main layout
@@ -164,6 +161,10 @@ class MainApp:
     def exit(cls):
         print_colored('info', 'Exiting')
         exit(0)
+
+    '''@classmethod
+    def server_error(cls):
+        pop_up = PopUp(cls.gui, 'Error', 'The server is not running', MainApp.exit)'''
 
 
 if __name__ == '__main__':
