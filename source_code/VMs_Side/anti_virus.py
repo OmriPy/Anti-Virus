@@ -14,11 +14,11 @@ class AntiVirus:
 
     @classmethod
     def run(cls):
-        with Protocol.connected_socket(cls.server_ip) as anti_virus:
+        with Network.connected_socket(cls.server_ip) as anti_virus:
             print_colored('info', 'Anti Virus has connected to the server')
 
             # Verify connection with the server
-            server_msg = send_and_recv(anti_virus, Messages.ANTI_VIRUS)
+            server_msg = Network.send_and_recv(anti_virus, Messages.ANTI_VIRUS)
             if server_msg != Messages.OK:
                 print_colored('server', server_msg)
                 print_colored('error', 'The server sent a message that is not OK. Exiting')
@@ -38,7 +38,7 @@ class AntiVirus:
                 if killing_result[0]:   # If a virus was found
                     msg = cls.possibilities[killing_result]
                     try:
-                        server_msg = send_and_recv(anti_virus, msg)
+                        server_msg = Network.send_and_recv(anti_virus, msg)
                     except ProtocolError as e:
                         print_colored('error', e)
                         return
@@ -48,7 +48,7 @@ class AntiVirus:
                     time.sleep(cls.delay)
                 except KeyboardInterrupt:
                     try:
-                        send_and_recv(anti_virus, Messages.CONNECTION_CLOSED)
+                        Network.send_and_recv(anti_virus, Messages.CONNECTION_CLOSED)
                     except ProtocolError as e:
                         print_colored('error', e)
                         return
