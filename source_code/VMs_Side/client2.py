@@ -1,4 +1,4 @@
-from client_utils import *
+from client2_utils import *
 from sys import argv
 from threading import Thread
 
@@ -45,6 +45,7 @@ class ClientSocket:
         cls.client.close()
 
 
+
 class GUI(QWidget):
 
     width = 200
@@ -62,58 +63,38 @@ class GUI(QWidget):
         self.main_layout = QVBoxLayout()
         self.setLayout(self.main_layout)
 
-        # Show Entry Page
-        self.show_entry_screen()
+        # Show Sign In screen
+        self.show_sign_in_screen()
 
         # Show screen
         self.show()
 
 
-    def show_entry_screen(self):
-        # Create Entry page
-        self.entry_screen = Screen(self)
+    def show_sign_in_screen(self):
+        # Create Sign In Screen
+        self.sign_in_screen = Screen(self, 'Sign In', (250, 225,))
+        self.sign_in_screen.center()
 
-        # Center the screen
-        self.entry_screen.center()
+        # Create User Name field
+        user_name_field = InputField(self, 'Username:', 'Enter your username here')
+        self.sign_in_screen.add_widget(user_name_field)
 
-        # Shape the frame
-        self.entry_screen.setFrameShape(QFrame.Shape.Box)
-
-        # Add label for Entry page
-        entry_label = Label('Welcome!')
-        self.entry_screen.add_widget(entry_label)
-
-        # Create 'Connect to server' button
-        connect_button = Button('Connect to Server', MainApp.connect_to_server)
-        self.entry_screen.add_widget(connect_button)
-
-        # Create Exit button
-        self.exit_button = Button('Exit', MainApp.exit)
-        self.entry_screen.add_widget(self.exit_button)
-
-        # Add frame to main layout
-        self.main_layout.addWidget(self.entry_screen)
+        password_field = InputField(self, 'Password:', 'Enter your password here')
+        self.sign_in_screen.add_widget(password_field)
 
 
-    def show_logs_screen(self):
+    def show_anti_virus_logs_screen(self):
         # Remove Entry page
-        self.entry_screen.remove()
-
-        # Define width and height of page
-        width = 400
-        height = 300
+        #self.entry_screen.remove()
 
         # Create Logs page
-        logs_screen = Screen(self, width, height)
-
-        # Center the screen
+        width = 400
+        height = 300
+        logs_screen = Screen('Anti Virus Logs', self, width, height)
         logs_screen.center()
 
-        # Shape the frame
-        logs_screen.setFrameShape(QFrame.Shape.Box)
-
         # Add Label to Logs page
-        label = Label('Virus Detection Logs:')
+        label = Label('Virus Detections Logs:')
         logs_screen.add_widget(label)
 
         # Add list view to Logs page
@@ -132,6 +113,7 @@ class GUI(QWidget):
         self.list_view.add_data(data)
 
 
+
 class MainApp:
 
     @classmethod
@@ -146,7 +128,7 @@ class MainApp:
     def connect_to_server(cls):
         client_sock_thrd = Thread(target=ClientSocket.connect_to_server, daemon=True)
         client_sock_thrd.start()
-        cls.gui.show_logs_screen()
+        cls.gui.show_anti_virus_logs_screen()
 
     @classmethod
     def add_data(cls, data: str):
@@ -161,10 +143,6 @@ class MainApp:
     def exit(cls):
         print_colored('info', 'Exiting')
         exit(0)
-
-    '''@classmethod
-    def server_error(cls):
-        pop_up = PopUp(cls.gui, 'Error', 'The server is not running', MainApp.exit)'''
 
 
 if __name__ == '__main__':
