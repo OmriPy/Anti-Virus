@@ -1,5 +1,15 @@
 Sorted by importance
 
+Client screens:
+                ------------             --------------
+                |  Sign In  |    <--->    |  Register  |
+                ------------             --------------
+                    |
+                    V
+                ---------------------
+                |  Anti-Virus Logs  |
+                ---------------------
+
 Project:
-*   Implement Users in client
+*   Continue database and server implementation of database
 *   Do something about the fact that there is an error if the client connects to the server but it is not running
