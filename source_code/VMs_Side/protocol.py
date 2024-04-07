@@ -1,7 +1,7 @@
 from colored_printing import *
 from socket import socket, AF_INET, SOCK_STREAM
 
-class Protocol:
+class Network:
 
     PORT = 55667
 
@@ -34,6 +34,30 @@ class Protocol:
             print_colored('error', 'The server is not running')
             exit(0)
         return sock
+
+    @classmethod
+    def send(cls, sock: socket, msg: str):
+        """Sends the message to the socket"""
+
+        packet = Packet.build(msg)
+        sock.send(packet.encode())
+
+    @classmethod
+    def recv(cls, sock: socket) -> str:
+        """Recieves the message from the socket"""
+
+        try:
+            msg = sock.recv(Packet.MAX_TOTAL_SIZE).decode()
+        except ConnectionResetError as e:
+            print_colored('error', e)
+        msg = Packet.unpack(msg)
+
+        return msg[1]
+
+    @classmethod
+    def send_and_recv(cls, sock: socket, msg: str) -> str:
+        cls.send(sock, msg)
+        return cls.recv(sock)
 
 
 ####    Errors Handling    ####
@@ -105,31 +129,6 @@ class Packet:
             raise ProtocolError(reason)
 
         return tuple(packet.split(cls.DELIMITER))
-
-
-####    Communication    ####
-
-def send(sock: socket, msg: str):
-    """Sends the message to the socket"""
-
-    packet = Packet.build(msg)
-    sock.send(packet.encode())
-
-
-def recv(sock: socket) -> str:
-    """Recieves the message from the socket"""
-
-    try:
-        msg = sock.recv(Packet.MAX_TOTAL_SIZE).decode()
-    except ConnectionResetError as e:
-        print_colored('error', e)
-    msg = Packet.unpack(msg)
-
-    return msg[1]
-
-def send_and_recv(sock: socket, msg: str) -> str:
-    send(sock, msg)
-    return recv(sock)
 
 
 class Messages:
