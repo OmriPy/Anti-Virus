@@ -1,4 +1,4 @@
-from server_utils import *
+from server2_utils import *
 from threading import Thread, Lock
 
 class Server:
@@ -9,7 +9,7 @@ class Server:
 
     @classmethod
     def run(cls):
-        with Protocol.listening_socket('0.0.0.0') as server:
+        with Network.listening_socket('0.0.0.0') as server:
             while True:
                 try:
                     client, cli_add = server.accept()
@@ -17,7 +17,7 @@ class Server:
                     print_colored('info', Messages.CTRL_C)
                     return
                 try:
-                    identity_msg = recv(client)
+                    identity_msg = Network.recv(client)
                 except KeyboardInterrupt:
                     print_colored('info', Messages.CTRL_C)
                     client.close()
@@ -34,7 +34,7 @@ class Server:
                     print_colored('error', 'Unknown socket has connected! Neither client nor Anti Virus')
                     client.close()
                     continue
-                send(client, Messages.OK)
+                Network.send(client, Messages.OK)
                 sock_thrd.start()
 
     @classmethod
@@ -44,7 +44,7 @@ class Server:
         print_colored('server', msg, cls.lock)
         while True:
             try:
-                client_msg = recv(client)
+                client_msg = Network.recv(client)
             except ProtocolError as e:
                 print_colored('error', e, cls.lock)
                 break
@@ -61,12 +61,12 @@ class Server:
         print_colored('server', msg, cls.lock)
         while True:
             try:
-                anti_virus_msg = recv(anti_virus)
+                anti_virus_msg = Network.recv(anti_virus)
             except ProtocolError as e:
                 print_colored('error', e, cls.lock)
                 break
             print_colored('anti virus', anti_virus_msg, cls.lock, anti_virus_id)
-            send(anti_virus, Messages.OK)
+            Network.send(anti_virus, Messages.OK)
             if anti_virus_msg == Messages.CONNECTION_CLOSED:
                 break
             cls.clients.send_to_all(anti_virus_msg)
