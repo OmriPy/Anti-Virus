@@ -1,4 +1,4 @@
-from protocol import *
+from database import *
 
 class SocketID:
 
@@ -39,4 +39,4 @@ class SocketsList:
 
     def send_to_all(self, data: str):
         for sockID in self._sockets:
-            send(sockID.sock, data)
+            Network.send(sockID.sock, data)
