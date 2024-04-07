@@ -32,6 +32,8 @@ class BaseScreen(QFrame):
 class Screen(BaseScreen):
 
     def __init__(self, window: QWidget, title: str = '', size: Tuple[int, int] = (0, 0)):
+        """Object used to represent a screen"""
+        
         super().__init__(window, True)
 
         # Set title
@@ -52,6 +54,8 @@ class Screen(BaseScreen):
         self.main_window.setWindowTitle(title)
 
     def center(self):
+        """Places the screen to be exactly at the center of your monitor"""
+
         # Monitor Size
         monitor_size = self.app.primaryScreen().geometry()
         monitor_width = monitor_size.width()
@@ -106,6 +110,8 @@ class InputLine(QLineEdit):
 class InputField(BaseScreen):
 
     def __init__(self, window: QWidget, sub_title: str, place_holder: str, initial_text: str = ''):
+        """Object containing a Label and InputLine variable, represnting a field that asks for input"""
+        
         super().__init__(window)
         
         self.sub_title = Label(sub_title)
