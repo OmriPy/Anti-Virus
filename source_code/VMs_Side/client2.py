@@ -9,9 +9,9 @@ class ClientSocket:
     @classmethod
     def connect_to_server(cls):
         # Connect to server
-        cls.client = Protocol.connected_socket(cls.server_ip)
+        cls.client = Network.connected_socket(cls.server_ip)
         print_colored('info', 'Client has connected to the server')
-        server_msg = send_and_recv(cls.client, Messages.CLIENT)
+        server_msg = Network.send_and_recv(cls.client, Messages.CLIENT)
         if server_msg != Messages.OK:
             print_colored('error', 'The server sent a message that is not OK. Exiting')
             MainApp.disconnect()
@@ -19,7 +19,7 @@ class ClientSocket:
         # Wait for data
         while True:
             try:
-                server_msg = recv(cls.client)
+                server_msg = Network.recv(cls.client)
             except ProtocolError as e:
                 print_colored('error', e)
                 return
@@ -36,12 +36,12 @@ class ClientSocket:
             MainApp.add_data(server_msg)
 
             # Confirm message to server
-            send(cls.client, Messages.OK)
+            Network.send(cls.client, Messages.OK)
 
     @classmethod
     def close(cls):
         print_colored('client', Messages.CONNECTION_CLOSED)
-        send(cls.client, Messages.CONNECTION_CLOSED)
+        Network.send(cls.client, Messages.CONNECTION_CLOSED)
         cls.client.close()
 
 
@@ -90,7 +90,7 @@ class GUI(QWidget):
         # Create Logs page
         width = 400
         height = 300
-        logs_screen = Screen('Anti Virus Logs', self, width, height)
+        logs_screen = Screen(self, 'Anti Virus Logs', (width, height,))
         logs_screen.center()
 
         # Add Label to Logs page
