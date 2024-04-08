@@ -1,7 +1,8 @@
-from PyQt6.QtCore import Qt
 from protocol import *
 from PyQt6.QtWidgets import (QApplication, QWidget, QVBoxLayout,
-                            QPushButton, QFrame, QLabel, QListWidget, QListWidgetItem, QLineEdit)
+    QPushButton, QFrame, QLabel, QListWidget, QListWidgetItem, QLineEdit,QSizePolicy, QMessageBox)
+from PyQt6.QtCore import Qt
+
 
 class BaseScreen(QFrame):
 
@@ -19,8 +20,10 @@ class BaseScreen(QFrame):
         
         self.main_window.layout().addWidget(self)
     
-    def add_widget(self, widg: QWidget):
+    def add_widget(self, widg: QWidget, center: bool = False):
         self.frame_layout.addWidget(widg)
+        if center:
+            self.frame_layout.setAlignment(widg, Qt.AlignmentFlag.AlignHCenter)
     
     def set_size(self, width: int, height: int):
         self.main_window.setFixedSize(width, height)
@@ -31,7 +34,10 @@ class BaseScreen(QFrame):
 
 class Screen(BaseScreen):
 
-    def __init__(self, window: QWidget, title: str = '', size: Tuple[int, int] = (0, 0)):
+    def __init__(self,
+                 window: QWidget,
+                 title: str = '',
+                 size: Tuple[int, int] = (0, 0)):
         """Object used to represent a screen"""
         
         super().__init__(window, True)
@@ -40,8 +46,7 @@ class Screen(BaseScreen):
         if title != '':
             self._set_title(title)
         
-        self.w = size[0]
-        self.h = size[1]
+        self.w, self.h = size
 
         # Set screen size
         if self.w == 0 and self.h == 0:
@@ -92,8 +97,11 @@ class Button(QPushButton):
     def __init__(self, text: str = '', func: Callable = None):
         super().__init__(text)
 
+        self.setSizePolicy(QSizePolicy.Policy.Maximum, QSizePolicy.Policy.Maximum)
+        #self.setStyleSheet('padding: 0.5em; border-radius: 10px; background: white;')
+
         if func != None:
-            self.connect(func) 
+            self.connect(func)
     
     def connect(self, func: Callable):
         self.clicked.connect(func)
@@ -101,24 +109,60 @@ class Button(QPushButton):
 
 class InputLine(QLineEdit):
 
-    def __init__(self, place_holder: str, initial_text: str = ''):
+    def __init__(self, place_holder: str, hide: bool = False, initial_text: str = ''):
         super().__init__(initial_text)
 
         self.setPlaceholderText(place_holder)
+        if hide:
+            self.setEchoMode(QLineEdit.EchoMode.Password)
+        self.setStyleSheet('color: white;')
 
 
 class InputField(BaseScreen):
 
-    def __init__(self, window: QWidget, sub_title: str, place_holder: str, initial_text: str = ''):
+    def __init__(self,
+                 window: QWidget,
+                 sub_title: str,
+                 place_holder: Optional[str] = None,
+                 hide: bool = False,
+                 initial_text: str = ''):
         """Object containing a Label and InputLine variable, represnting a field that asks for input"""
         
         super().__init__(window)
         
+        place_holder = place_holder or f'Enter your {sub_title.lower()} here'
+        sub_title = f'{sub_title}:'
         self.sub_title = Label(sub_title)
-        self.input = InputLine(place_holder, initial_text)
+        self.input_line = InputLine(place_holder, hide, initial_text)
 
-        #self.sub_title.setFixedSize(150, 100)
-        #self.input.setFixedSize(150, 100)
+        self.setStyleSheet('padding: 0.25em 0.1em;')
 
         self.add_widget(self.sub_title)
-        self.add_widget(self.input)
+        self.add_widget(self.input_line)
+    
+    def text(self) -> str:
+        return self.input_line.text()
+
+
+class PopUp(QMessageBox):
+
+    INFO = 1
+    QUESTION = 2
+    WARNING = 3
+    CRITICAL = 4
+
+    ICONS: Dict[int, QMessageBox.Icon] = {
+        INFO: QMessageBox.Icon.Information,
+        QUESTION: QMessageBox.Icon.Question,
+        WARNING: QMessageBox.Icon.Warning,
+        CRITICAL: QMessageBox.Icon.Critical
+    }
+
+    def __init__(self, text: str, type: int):
+        super().__init__()
+
+        self.setIcon(self.ICONS[type])
+        self.setText(text)
+    
+    def show(self):
+        self.exec()
