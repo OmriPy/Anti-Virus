@@ -18,14 +18,13 @@ Important - must for project requirements:
         - Make sure that the multiclient server is using multithreading - DONE
         - Make sure that the virus detector uses the OS API to detect the virus - (DONE, I think)
     Database:
-        - Add to the antivirus server a database of Users
-        - Implement registration and login screen in client
-        - At least 4 input fields in registration
-        - Add a column of sock_id in Users table
+        - Add to the antivirus server a database of Users - DONE
+        - Implement registration and sign in screens in client - DONE
+        - At least 4 input fields in registration - DONE
     Security:
         - Add encryption to the antivirus server-client protocol
     GUI:
-        - Add "virus detected" notification to the antivirus client
+        - Add "virus detected" notification to the user - DONE
 
 Nice to have:
 - Create a simple vulnerable app - DONE
@@ -33,4 +32,3 @@ Nice to have:
 - Create a virus
 - Create a virus server that attacks the vulnerable web app and runs the virus on the victim PC
 - Add to the virus and its server command running functionallity
-- Think about changing the `colored printing` to use `SocketID` object in order to implement `sock_id` more efficiently
