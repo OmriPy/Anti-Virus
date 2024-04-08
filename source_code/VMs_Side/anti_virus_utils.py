@@ -2,7 +2,7 @@ from protocol import *
 import os, subprocess, platform
 
 
-class OperatingSystems:
+class _OperatingSystems:
 
     WINDOWS = 'Windows'
     MAC_OS = 'Darwin'
@@ -15,25 +15,25 @@ class OperatingSystems:
 
 class FindAndKillProcess:
 
-    pid_index: Dict[str, int] = {
-        OperatingSystems.WINDOWS: 1,
-        OperatingSystems.MAC_OS: 0,
-        OperatingSystems.LINUX: 0
+    _pid_index: Dict[str, int] = {
+        _OperatingSystems.WINDOWS: 1,
+        _OperatingSystems.MAC_OS: 0,
+        _OperatingSystems.LINUX: 0
     }
 
-    commands: Dict[str, str] = {
-        OperatingSystems.WINDOWS: 'tasklist /v',
-        OperatingSystems.MAC_OS: 'ps -A',
-        OperatingSystems.LINUX: 'ps -A'
+    _commands: Dict[str, str] = {
+        _OperatingSystems.WINDOWS: 'tasklist /v',
+        _OperatingSystems.MAC_OS: 'ps -A',
+        _OperatingSystems.LINUX: 'ps -A'
     }
 
 
     def __init__(self, proc_name: str):
         """Object that finds the given process and kills it when hunt() is called"""
 
-        self.target_proc = proc_name
-        self.os = OperatingSystems.active()
-        self.cmd = self.commands[self.os]
+        self._target_proc = proc_name
+        self._os = _OperatingSystems.active()
+        self._cmd = self._commands[self._os]
 
 
     def hunt(self) -> Tuple[bool, bool]:
@@ -58,13 +58,13 @@ class FindAndKillProcess:
 
 
     def _all_procs(self) -> List[str]:
-        all_procs = subprocess.check_output(self.cmd, shell=True).decode()
+        all_procs = subprocess.check_output(self._cmd, shell=True).decode()
         return all_procs.split('\n')
 
     def _filter_target(self, all_procs: List[str]) -> List[str]:
         found = []
         for proc in all_procs:
-            if self.target_proc in proc:
+            if self._target_proc in proc:
                 found.append(proc)
         return found
 
@@ -72,12 +72,12 @@ class FindAndKillProcess:
         pids = []
         for proc in target_procs:
             words = proc.split()
-            pid_index = self.pid_index[self.os]
-            pids.append(int(words[pid_index]))
+            _pid_index = self._pid_index[self._os]
+            pids.append(int(words[_pid_index]))
         return pids
 
     def _kill_target_procs(self, pids: List[int]) -> bool:
-        is_windows = self.os == OperatingSystems.WINDOWS
+        is_windows = self._os == _OperatingSystems.WINDOWS
         if is_windows:
             for pid in pids:
                 try:
