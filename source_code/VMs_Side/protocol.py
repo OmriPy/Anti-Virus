@@ -1,5 +1,5 @@
 from colored_printing import *
-from socket import socket, AF_INET, SOCK_STREAM
+from socket import socket, AF_INET as _AF_INET, SOCK_STREAM as _SOCK_STREAM
 
 class Network:
 
@@ -9,7 +9,7 @@ class Network:
     def listening_socket(cls, IP: str) -> socket:
         """Returns a socket listening to the given IP"""
 
-        sock = socket(AF_INET, SOCK_STREAM)
+        sock = socket(_AF_INET, _SOCK_STREAM)
         try:
             sock.bind((IP, cls.PORT,))
         except OSError as e:
@@ -27,7 +27,7 @@ class Network:
     def connected_socket(cls, IP: str) -> socket:
         """Returns a socket connected to the given IP"""
 
-        sock = socket(AF_INET, SOCK_STREAM)
+        sock = socket(_AF_INET, _SOCK_STREAM)
         try:
             sock.connect((IP, cls.PORT,))
         except ConnectionRefusedError:
@@ -39,7 +39,7 @@ class Network:
     def send(cls, sock: socket, msg: str):
         """Sends the message to the socket"""
 
-        packet = Packet.build(msg)
+        packet = _Packet.build(msg)
         sock.send(packet.encode())
 
     @classmethod
@@ -47,10 +47,10 @@ class Network:
         """Recieves the message from the socket"""
 
         try:
-            msg = sock.recv(Packet.MAX_TOTAL_SIZE).decode()
+            msg = sock.recv(_Packet.MAX_TOTAL_SIZE).decode()
         except ConnectionResetError as e:
             print_colored('error', e)
-        msg = Packet.unpack(msg)
+        msg = _Packet.unpack(msg)
 
         return msg[1]
 
@@ -72,7 +72,7 @@ class ProtocolError(Exception):
 
 ####    Packet Structure    ####
 
-class Packet:
+class _Packet:
     """The structure: DATA_SIZE|DATA"""
 
     DELIMITER = '|'
@@ -134,12 +134,66 @@ class Packet:
 class Messages:
 
     OK = 'OK'
-    CONNECTION_CLOSED = 'The connection has been closed'
+    DISCONNECTION = 'Disconnected'
     CTRL_C = 'Exiting due to CTRL+C'
-    CLIENT = 'This is Client'
-    ANTI_VIRUS = 'This is Anti virus'
-    CONNECTED_TEMPLATE = '{}({}) has connected'
+    IS_USER = 'This is User'
+    IS_ANTI_VIRUS = 'This is Anti virus'
+    CONNECTED = '{}({}) has connected'
+
 
     @classmethod
-    def connected(cls, connection_type: str, sock_id: int) -> str:
-        return cls.CONNECTED_TEMPLATE.format(connection_type, sock_id)
+    def anti_virus_connected(cls, sock_id: int) -> str:
+        return cls.CONNECTED.format('Anti Virus', sock_id)
+
+
+
+class UserMessages:
+
+    USER_REMOVED = 'User ({}) has been removed'
+    
+    REGISTER = 'Register: {}, {}, {}, {}'
+    REGISTER_OK = 'Registration form is OK'
+    USER_ADDED = 'User ({}) has been added'
+    USER_CONNECTED = 'User ({}) has connected'
+    
+    SIGN_IN = 'Sign_In: {}, {}'
+    SIGN_IN_OK = 'Sign In is OK'
+    USER_EXISTS = 'User already exists'
+    NO_EXISTING_USER = 'No user exists with given username'
+    INCORRECT_PASS = 'Password is incorrect'
+
+
+    @classmethod
+    def user_connected(cls, username: str) -> str:
+        return cls.USER_CONNECTED.format(username)
+
+    @classmethod
+    def removed(cls, username: str) -> str:
+        return cls.USER_REMOVED.format(username)
+
+    @classmethod
+    def added(cls, username: str) -> str:
+        return cls.USER_ADDED.format(username)
+    
+    @classmethod
+    def register(cls, user_details: Tuple[str, str, str, str]) -> str:
+        username, password, confirm_pass, email, phone_number = user_details
+        return cls.REGISTER.format(username, password, email, phone_number)
+
+    @classmethod
+    def sign_in(cls, user_details: Tuple[str, str]) -> str:
+        username, password = user_details
+        return cls.SIGN_IN.format(username, password)
+
+    @classmethod
+    def is_register(cls, msg: str) -> bool:
+        return msg.startswith(cls.REGISTER[:cls.REGISTER.index(':')])
+
+    @classmethod
+    def is_sign_in(cls, msg: str) -> bool:
+        return msg.startswith(cls.SIGN_IN[:cls.SIGN_IN.index(':')])
+
+    @classmethod
+    def pack(cls, msg: str) -> Tuple:
+        details = msg[msg.index(' ')+1:]
+        return tuple(details.split(', '))
