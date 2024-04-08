@@ -18,7 +18,7 @@ class AntiVirus:
             print_colored('info', 'Anti Virus has connected to the server')
 
             # Verify connection with the server
-            server_msg = Network.send_and_recv(anti_virus, Messages.ANTI_VIRUS)
+            server_msg = Network.send_and_recv(anti_virus, Messages.IS_ANTI_VIRUS)
             if server_msg != Messages.OK:
                 print_colored('server', server_msg)
                 print_colored('error', 'The server sent a message that is not OK. Exiting')
@@ -48,11 +48,11 @@ class AntiVirus:
                     time.sleep(cls.delay)
                 except KeyboardInterrupt:
                     try:
-                        Network.send_and_recv(anti_virus, Messages.CONNECTION_CLOSED)
+                        Network.send_and_recv(anti_virus, Messages.DISCONNECTION)
                     except ProtocolError as e:
                         print_colored('error', e)
                         return
-                    print_colored('anti virus', Messages.CONNECTION_CLOSED)
+                    print_colored('anti virus', Messages.DISCONNECTION)
                     print_colored('info', Messages.CTRL_C)
                     return
 
