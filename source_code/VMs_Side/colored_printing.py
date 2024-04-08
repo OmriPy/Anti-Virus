@@ -1,34 +1,32 @@
-from colorama import init, Fore, Style
+from colorama import init as _init, Fore as _Fore, Style as _Style
 from typing import Tuple, List, Dict, Callable, Optional
-
-__all__ = ['Tuple', 'List', 'Dict', 'Callable', 'Optional', 'print_colored']
 
 #### Colored Printing ####
 
-init()
+_init()
 
-colors = {
-    'Server': Fore.LIGHTBLACK_EX,
-    'User': Fore.BLUE,
-    'Anti virus': Fore.CYAN,
-    'Info': Fore.RESET,
-    'Database': Fore.GREEN,
-    'Warning': Fore.YELLOW,
-    'Error': Fore.LIGHTRED_EX
+_colors = {
+    'Server': _Fore.LIGHTBLACK_EX,
+    'User': _Fore.BLUE,
+    'Anti virus': _Fore.CYAN,
+    'Info': _Fore.RESET,
+    'Database': _Fore.GREEN,
+    'Warning': _Fore.YELLOW,
+    'Error': _Fore.LIGHTRED_EX
 }
 
-def colorful_str(color: str, prefix: str, msg: str, sock_id: int = 0, username: str = '') -> str:
+def _colorful_str(color: str, prefix: str, msg: str, sock_id: int = 0, username: str = '') -> str:
     if username != '':
-        return f"{Style.BRIGHT}{color}[{prefix} ({username})]: {msg}{Style.RESET_ALL}"
+        return f"{_Style.BRIGHT}{color}[{prefix} ({username})]: {msg}{_Style.RESET_ALL}"
     elif sock_id != 0:
-        return f"{Style.BRIGHT}{color}[{prefix}({sock_id})]: {msg}{Style.RESET_ALL}"
+        return f"{_Style.BRIGHT}{color}[{prefix}({sock_id})]: {msg}{_Style.RESET_ALL}"
     else:
-        return f"{Style.BRIGHT}{color}[{prefix}]: {msg}{Style.RESET_ALL}"
+        return f"{_Style.BRIGHT}{color}[{prefix}]: {msg}{_Style.RESET_ALL}"
 
 def print_colored(prefix: str, msg: str, lock = None, sock_id: int = 0, username: str = ''):
     prefix = prefix.capitalize()
-    color = colors.get(prefix, Fore.WHITE)
-    string = colorful_str(color, prefix, msg, sock_id, username)
+    color = _colors.get(prefix, _Fore.WHITE)
+    string = _colorful_str(color, prefix, msg, sock_id, username)
     if lock == None:
         print(string)
     else:
