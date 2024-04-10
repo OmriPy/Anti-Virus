@@ -17,6 +17,7 @@ Important - must for project requirements:
     Operating systems:
         - Make sure that the multiclient server is using multithreading - DONE
         - Make sure that the virus detector uses the OS API to detect the virus - (DONE, I think)
+        - Install another kali linux in order to have 3 VMs
     Database:
         - Add to the antivirus server a database of Users - DONE
         - Implement registration and sign in screens in client - DONE
@@ -25,6 +26,13 @@ Important - must for project requirements:
         - Add encryption to the antivirus server-client protocol
     GUI:
         - Add "virus detected" notification to the user - DONE
+    Book:
+        - Add a screenshot of the list of used VMs which is in VMware Fusion Library
+        - Add to technologies (modules) list: VMware Fusion
+        - Note that the clients are Kali Linux machines
+        - Explain in detail the conecpt of the LAN inside the VMs
+        - Add a "super" drawing which describes the machines used in the project. Within each one, draw the project's softwares used in it.
+          Think of it like combining the drawing of the machines in Notes app and the drawing in drawio which is in this repo.
 
 Nice to have:
 - Create a simple vulnerable app - DONE
