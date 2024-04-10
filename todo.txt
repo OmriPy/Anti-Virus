@@ -1,11 +1,13 @@
 Note: Sorted by order of importance
 
-Must have - basic functionallity:
+
+Must have / basic functionallity (for the project's idea, disregarding MOE's requirements):
 - Define virus as the whatsapp application: `ps aux | grep WhatsApp` - DONE
 - find a virus by checking if name of a running proces is name of a virus - DONE
 - prevent virus from doing its things - DONE
 
-Important - must for project requirements:
+
+Important - must for project (MOE's) requirements:
     OOP:
         - Make sure that the entire project uses at least 4 OOP classes - DONE
     Networking:
@@ -26,6 +28,7 @@ Important - must for project requirements:
         - Add encryption to the protocol
     GUI:
         - Add "virus detected" notification to the user - DONE
+        
     Book:
         - Add a screenshot of the list of used VMs which is in VMware Fusion Library
         - Add to technologies (modules) list: VMware Fusion
@@ -33,10 +36,24 @@ Important - must for project requirements:
         - Explain in detail the conecpt of the LAN inside the VMs
         - Add a "super" drawing which describes the machines used in the project. Within each one, draw the project's softwares used in it.
           Think of it like combining the drawing of the machines in Notes app and the drawing in drawio which is in this repo.
+        - Add definitions (הגדרות) section which explains the meaning of each phrase you use in the book
+          (for exampe, VM, virus, etc.), in order to make things clear.
+
+
+General needs:
+- Read the files Nir sent you, in order to understand how you write the book properly and to add other ways to detect viruses
+  (signatures, creating / opening / deleting files, etc.)
+
 
 Nice to have:
-- Create a simple vulnerable app - DONE
-- Make the vulnerable app open to the web - DONE
-- Create a virus
-- Create a virus server that attacks the vulnerable web app and runs the virus on the victim PC
-- Add to the virus and its server command running functionallity
+    Regarding outer network (host VM):
+        - Create a simple vulnerable app (which theoretically the virus will exploit) [VMs] - DONE
+        - Make the vulnerable app open to the web [VMs] - DONE
+        - Create a virus [Host OS]
+        - Create a virus server that attacks the vulnerable web app and runs the virus on the victim PC [Host OS]
+        - Add to the virus and its server command running functionallity [Host OS]
+    GUI:
+        - Add option to log out and remove account (implement in server and database as well)
+        - Add in registration an option to specify the virus the user wants to kill
+          (check if you can implement that becuase the anti virus is needed for this)
+        - Add settings screen (you can change the virus name the user would like to kill, and more)
