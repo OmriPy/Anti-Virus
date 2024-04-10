@@ -4,7 +4,7 @@ Note: Sorted by order of importance
 Must have / basic functionallity (for the project's idea, disregarding MOE's requirements):
 - Define virus as the whatsapp application: `ps aux | grep WhatsApp` - DONE
 - find a virus by checking if name of a running proces is name of a virus - DONE
-- prevent virus from doing its things - DONE
+- prevent virus from doing its things (kill it) - DONE
 
 
 Important - must for project (MOE's) requirements:
