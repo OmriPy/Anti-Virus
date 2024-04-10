@@ -23,7 +23,7 @@ Important - must for project requirements:
         - Implement registration and sign in screens in client - DONE
         - At least 4 input fields in registration - DONE
     Security:
-        - Add encryption to the antivirus server-client protocol
+        - Add encryption to the protocol
     GUI:
         - Add "virus detected" notification to the user - DONE
     Book:
