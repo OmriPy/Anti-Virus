@@ -46,14 +46,42 @@ If you see two interfaces, `eth0` and `eth1` (see below), it means that we succe
 
 ![image](https://github.com/OmriPy/Virus/assets/110406612/e3b5b9ca-fbba-4c2e-934b-c41a3bffa64b)
 
-### Routing
+### Routing settings
 In order to enable IP forwarding, type the following commands on the Router machine:
 ```
 sudo su
 echo 1 > /proc/sys/net/ipv4/ip_forward
 ```
-To make these changes persistent even after rebooting the system, run:
+To make these changes consistent after rebooting, run:
 ```
 echo 'net.ipv4.ip_forward=1' >> /etc/sysctl.conf
 sysctl -p
 ```
+### NAT and routing configuration
+In order for this VM to actually route packets to the WAN (Wide Area Network), recieve packets from it, and enable the NAT process, we need to use `ip-tables`.
+
+Make sure you're at the root directory of this project, create `route.sh` and write this in the file:
+```
+# This is the file that when executed, the router virtual machine becomes a router.
+# Located at <your root directory>
+
+iptables=`which iptables`
+LAN='eth1'
+WAN='eth0'
+
+# Filter existing rules
+$iptables -F
+$iptables -t nat -F
+
+# NAT
+$iptables -t nat -A POSTROUTING -o $WAN -j MASQUERADE
+
+# Forward packets from LAN to WAN
+$iptables -A FORWARD -i $LAN -o $WAN -j ACCEPT
+
+# Accept incoming packets from WAN to LAN
+$iptables -A FORWARD -i $WAN -o $LAN -m state --state RELATED,ESTABLISHED -j ACCEPT
+```
+
+Now, we need to make sure this file gets executed whenever the machine is booted.
+In order to do that, we need to use a Service. The path for services in kali linux
