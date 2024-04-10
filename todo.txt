@@ -8,6 +8,17 @@ Must have / basic functionallity (for the project's idea, disregarding MOE's req
 
 
 Important - must for project (MOE's) requirements:
+    MOE's Requirements Concluded:
+        - At least 4 OOP classes - DONE
+        - Socket-based server and client - DONE
+        - Multi-client server - DONE
+        - Communication protocol - DONE
+        - Threads usage - DONE
+        - Files access / API / COM (??) / Hardware components (microphone, camera, etc.)  - DONE??
+        - Encryption
+        - Removing potential vulnerabilities in project
+        - Interactive user interface (GUI) - DONE
+
     OOP:
         - Make sure that the entire project uses at least 4 OOP classes - DONE
     Networking:
@@ -26,6 +37,7 @@ Important - must for project (MOE's) requirements:
         - At least 4 input fields in registration - DONE
     Security:
         - Add encryption to the protocol
+        - Remove every potential vulnerability your project may have (XSS, SQL injection, etc.)
     GUI:
         - Add "virus detected" notification to the user - DONE
         
