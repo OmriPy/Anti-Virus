@@ -63,7 +63,6 @@ In order for this VM to actually route packets to the WAN (Wide Area Network), r
 Make sure you're at the root directory of this project, create `route.sh` and write this in the file:
 ```
 # This is the file that when executed, the router virtual machine becomes a router.
-# Located at <your root directory>
 
 iptables=`which iptables`
 LAN='eth1'
@@ -84,4 +83,31 @@ $iptables -A FORWARD -i $WAN -o $LAN -m state --state RELATED,ESTABLISHED -j ACC
 ```
 
 Now, we need to make sure this file gets executed whenever the machine is booted.
-In order to do that, we need to use a Service. The path for services in kali linux
+In order to do that, we need to use a Service. The path for services in linux distributions is `/etc/systemd/system` or `/lib/systemd/system` (depends on the distro). `cd` to that directory, create `route.service` and write the following:
+```
+[Unit]
+Description=Making this Linux VM a router
+
+[Service]
+ExecStart=/bin/bash <the project's root directory>/route.sh
+
+[Install]
+WantedBy=multi-user.target
+```
+Make sure you wrote the root directory where needed.
+
+The file we created is the service which is going to run the script `<root dir>/route.sh` every time the system boots. Now we need to make it actually run the script whenever the system boots:
+```
+sudo su
+systemctl enable route
+```
+Everything is theoretically done, now we need to make sure the service is working. We can do that by manually executing the service (still inside `root`):
+```
+systemctl start route
+systemctl status route
+```
+If you see `status=0/SUCCESS` it means that the service worked:
+
+![image](https://github.com/OmriPy/Anti-Virus/assets/110406612/5009b4cd-60ab-45f2-ab2a-243b6b589597)
+
+Congrats! You made this Virtual Machine a router.
