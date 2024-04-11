@@ -46,7 +46,9 @@ If you see two interfaces, `eth0` and `eth1` (see below), it means that we succe
 
 ![image](https://github.com/OmriPy/Virus/assets/110406612/e3b5b9ca-fbba-4c2e-934b-c41a3bffa64b)
 
-### Routing settings
+
+### Making a Kali Linux Virtual Machine become a router
+#### Routing settings
 In order to enable IP forwarding, type the following commands on the Router machine:
 ```
 sudo su
@@ -57,7 +59,7 @@ To make these changes consistent after rebooting, run:
 echo 'net.ipv4.ip_forward=1' >> /etc/sysctl.conf
 sysctl -p
 ```
-### NAT and routing configuration
+#### NAT and routing configuration
 In order for this VM to actually route packets to the WAN (Wide Area Network), recieve packets from it, and enable the NAT process, we need to use `ip-tables`.
 
 Make sure you're at the root directory of this project, create `route.sh` and write this in the file:
@@ -96,7 +98,7 @@ WantedBy=multi-user.target
 ```
 Make sure you wrote the root directory where needed.
 
-The file we created is the service which is going to run the script `<root dir>/route.sh` every time the system boots. Now we need to make it actually run the script whenever the system boots:
+The file we created is the service which is going to run the script `route.sh` every time the system boots. Now we need to make it actually run the script whenever the system boots:
 ```
 sudo su
 systemctl enable route
@@ -111,3 +113,44 @@ If you see `status=0/SUCCESS` it means that the service worked:
 ![image](https://github.com/OmriPy/Anti-Virus/assets/110406612/5009b4cd-60ab-45f2-ab2a-243b6b589597)
 
 Congrats! You made this Virtual Machine a router.
+
+### Connecting a Kali Linux Virtual Machine to a router
+Default Gateway - IP address of a computer's router
+
+Now our router is working, but no other machine can use it as a real router, yet.
+In order to set the machine's default gateway to our router's IP, we can use Services again.
+
+`cd` to this project's root directory, create `set_default_gateway.sh` and write:
+```
+sudo ip route add default via <Router's IP> dev <the LAN's interface, usually eth0>
+```
+When this script runs, the default gateway is manually changed to our router. Now, just as before with our router, we need to make this script run automatically
+whenever the system is starting.
+
+`cd` to your distro's default path of services (as mentioned before: `/etc/systemd/system` / `/lib/systemd/system`), create `automatic_set_defualt_gateway.service` and write:
+```
+[Unit]
+Description=Setting default gatway to router
+
+[Service]
+ExecStart=/bin/bash <the project's root directory>/set_default_gateway.sh
+
+[Install]
+WantedBy=multi-user.target
+```
+
+run the following to automatically execute the service:
+```
+sudo su
+systemctl enable automatic_set_defualt_gateway
+```
+
+and manually check if the service is working:
+```
+systemctl start route
+systemctl status route
+```
+
+if you see `status=0/SUCCESS` it means the service is working properly.
+
+Now repeat this process for every VM you would like to connect to the router VM.
