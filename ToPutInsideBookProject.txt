@@ -1,0 +1,16 @@
+User screens (draw that in the book):
+                ------------             --------------
+                |  Sign In |    <--->    |  Register  |
+                ------------             --------------
+                    |
+                    V
+                ---------------------
+                |  Anti-Virus Logs  |
+                ---------------------
+
+
+Database Users table columns:
+1.  username (primary key)
+2.  base64_password
+3.  email
+4.  phone_number
