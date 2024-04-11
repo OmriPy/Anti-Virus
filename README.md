@@ -7,7 +7,7 @@
 ## LAN Configuration
 Our goal here is to connect all of the Virtual Machines to a new LAN that will be private to them. Which means that the VMs' network won't even be accessible to the main Operating System of the Laptop, just like your home's Wi-Fi isn't accessible to the White House (theoretically).
 
-### Creating the Private Network for each PC
+### Creating the Private Network for each Client
 For every VM that is Not the Router, we change the Network Adapter settings to Private to my Mac.
 
 Right click the VM -> `Settings` -> `Network Adapter` -> select `Private to my Mac`
