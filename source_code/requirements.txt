@@ -1,0 +1,6 @@
+PyQt6==6.6.0
+PyQt6-Qt6==6.6.0
+PyQt6-sip==13.6.0
+colorama==0.4.5
+SQLAlchemy==1.4.39
+scrypt==0.8.24
