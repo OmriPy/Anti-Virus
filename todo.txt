@@ -58,6 +58,8 @@ Important - must for project (MOE's) requirements:
           Also expalin why you encrypted the password twice - because the Scrypt hash is returned as bytes object,
           and you need to save the password as a string the database, but you can't use str.decode()
           because the Scrypt hash has unencodeable characters.
+        - Note that use python's naming convention and this is why some variables and classes names may start with
+          an underscore (_), indicating they're for private use only.
 
 
 General needs:
