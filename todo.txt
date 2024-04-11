@@ -55,6 +55,7 @@ Important - must for project (MOE's) requirements:
 General needs:
 - Read the files Nir sent you, in order to understand how you write the book properly and to add other ways to detect viruses
   (signatures, creating / opening / deleting files, etc.)
+- Search UML diagrams for helping you create the "super drawing"
 
 
 Nice to have:
