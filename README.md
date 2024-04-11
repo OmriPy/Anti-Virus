@@ -147,8 +147,8 @@ systemctl enable automatic_set_defualt_gateway
 
 and manually check if the service is working:
 ```
-systemctl start route
-systemctl status route
+systemctl start automatic_set_defualt_gateway
+systemctl status automatic_set_defualt_gateway
 ```
 
 if you see `status=0/SUCCESS` it means the service is working properly.
