@@ -35,7 +35,9 @@ Important - must for project (MOE's) requirements:
         - Add to the antivirus server a database of Users - DONE
         - Implement registration and sign in screens in client - DONE
         - At least 4 input fields in registration - DONE
+        - Save the user password in hash - DONE
     Security:
+        - Use hashing for password management in the database - DONE
         - Add encryption to the protocol
         - Remove every potential vulnerability your project may have (XSS, SQL injection, etc.)
     GUI:
@@ -46,16 +48,22 @@ Important - must for project (MOE's) requirements:
         - Add to technologies (modules) list: VMware Fusion
         - Note that the clients are Kali Linux machines
         - Explain in detail the conecpt of the LAN inside the VMs
-        - Add a "super" drawing which describes the machines used in the project. Within each one, draw the project's softwares used in it.
+        - Add a "super" drawing which describes the machines used in the project. Within each one, draw the project's
+          softwares used in it.
           Think of it like combining the drawing of the machines in Notes app and the drawing in drawio which is in this repo.
         - Add definitions (הגדרות) section which explains the meaning of each phrase you use in the book
           (for exampe, VM, virus, etc.), in order to make things clear.
+        - Exaplain that you saved the user password in the database as a Scrypt hash (explain what is Scrypt)
+          and then you base64 encoded (explain what is base64 encoding) that hash and this is what's saved in the database.
+          Also expalin why you encrypted the password twice - because the Scrypt hash is returned as bytes object,
+          and you need to save the password as a string the database, but you can't use str.decode()
+          because the Scrypt hash has unencodeable characters.
 
 
 General needs:
 - Read the files Nir sent you, in order to understand how you write the book properly and to add other ways to detect viruses
   (signatures, creating / opening / deleting files, etc.)
-- Search UML diagrams for helping you create the "super drawing"
+- Search about UML diagrams for the "super drawing"
 
 
 Nice to have:
