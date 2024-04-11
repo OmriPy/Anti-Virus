@@ -1,0 +1,32 @@
+User screens:
+                ------------             --------------
+                |  Sign In |    <--->    |  Register  |
+                ------------             --------------
+                    |
+                    V
+                ---------------------
+                |  Anti-Virus Logs  |
+                ---------------------
+
+User options regarding database:
+-   Register (creates a new user in the database) - DONE
+-   Sign In (connects to the server using an existing user) - DONE
+-   Log Out (disconnects from the server, but not being removed from the database)
+-   Delete user (removes the user from the database)
+
+
+Database Users table columns:
+1.  username (primary key)
+2.  base64_password
+3.  email
+4.  phone_number
+
+
+Sorted by importance
+
+Project:
+*   Figure out why the user is getting an empty packet after printing 'Exiting'
+*   Make instances private: In all the files, add _ before every name of class, function, variable, etc that
+    is used privately
+*   Do something about the fact that there is an error if the client connects to the server but it is not running
+*   Start the book project
