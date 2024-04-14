@@ -1,8 +1,9 @@
 from protocol import *
 from hashing import *
-from sqlalchemy import create_engine, MetaData, Table, Column, String, Integer
+from sqlalchemy import create_engine, MetaData, Table, Column, String, Boolean
 from sqlalchemy.orm import mapper, sessionmaker
 from sqlalchemy.exc import IntegrityError
+from sqlalchemy.orm.session import Session
 
 
 class User:
@@ -12,6 +13,7 @@ class User:
         self.base64_password = ScryptHash(password).create_b64_hash()
         self.email = email
         self.phone_number = phone_number
+        self.signed_in = False
 
 
 class Database:
@@ -28,7 +30,8 @@ class Database:
             Column('username', String, primary_key=True),
             Column('base64_password', String),
             Column('email', String),
-            Column('phone_number', String)
+            Column('phone_number', String),
+            Column('signed_in', Boolean, default=False)
         )
 
         mapper(User, users_table)
@@ -37,11 +40,10 @@ class Database:
     
 
     @classmethod
-    def _find_user(cls, primary_key: str):
+    def _find_user(cls, primary_key: str) -> Tuple[User, Session]:
         session = sessionmaker(bind=cls.engine)()
         wanted_user = session.query(User).get(primary_key)
-        session.close()
-        return wanted_user
+        return wanted_user, session
 
 
     @classmethod
@@ -63,16 +65,37 @@ class Database:
     @classmethod
     def sign_in_check(cls, user_details: Tuple[str, str]) -> Tuple[bool, str]:
         username, password = user_details
-        wanted_user: User = cls._find_user(username)
+        wanted_user, session = cls._find_user(username)
 
-        if wanted_user == None:
+        if wanted_user is None:
+            session.close()
             return False, UserMessages.NO_EXISTING_USER
+        if wanted_user.signed_in:
+            session.close()
+            return False, UserMessages.ALREADY_SIGNED_IN
         if ScryptHash.create_from_b64(wanted_user.base64_password).compare(password):
+            wanted_user.signed_in = True
+            session.commit()
+            session.close()
             return True, ''
         else:
+            session.close()
             return False, UserMessages.INCORRECT_PASS
-
+    
     @classmethod
+    def sign_out(cls, username: str) -> Tuple[bool, str]:
+        wanted_user, session = cls._find_user(username)
+        if wanted_user is None:
+            return False, UserMessages.NO_EXISTING_USER
+        if not wanted_user.signed_in:
+            return False, UserMessages.NOT_SIGNED_IN
+        wanted_user.signed_in = False
+        session.commit()
+        session.close()
+        return True, ''
+
+
+    '''@classmethod
     def remove_user(cls, username: str):
         session = sessionmaker(bind=cls.engine)()
         wanted_user = cls._find_user(username)
@@ -82,11 +105,4 @@ class Database:
             print_colored('database', UserMessages.removed(username))
         else:
             print_colored('error', 'User could not be removed')
-        session.close()
-
-
-if __name__ == '__main__':
-    Database.init()
-    #Database.add_user(('omri', 'cyber', 'omri@cyber.org', '050-7266030',))
-    #Database.remove_user('omri')
-    #print(Database.sign_in_check(('fsdf', 'niger',)))
+        session.close()'''
