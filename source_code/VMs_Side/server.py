@@ -1,6 +1,7 @@
 from server_utils import *
 from threading import Thread, Lock
 
+
 class Server:
 
     lock = Lock()
@@ -9,6 +10,7 @@ class Server:
 
     @classmethod
     def run(cls):
+        Database.init()
         with Network.listening_socket('0.0.0.0') as server:
             while True:
                 try:
@@ -27,15 +29,15 @@ class Server:
                     client.close()
                     return
                 if identity_msg == Messages.IS_USER:
-                    sock_thrd = Thread(target=cls.handle_user, args=(client,))
+                    client_thread = Thread(target=cls.handle_user, args=(client,))
                 elif identity_msg == Messages.IS_ANTI_VIRUS:
-                    sock_thrd = Thread(target=cls.handle_anti_virus, args=(client,))
+                    client_thread = Thread(target=cls.handle_anti_virus, args=(client,))
                 else:
                     print_colored('error', 'Unknown socket has connected! Neither client nor Anti Virus')
                     client.close()
                     continue
                 Network.send(client, Messages.OK)
-                sock_thrd.start()
+                client_thread.start()
 
     @classmethod
     def handle_user(cls, user: socket):
@@ -56,12 +58,14 @@ class Server:
                 username = cls.add_user(user, user_msg)
             elif UserMessages.is_sign_in(user_msg):
                 username = cls.sign_in_check(user, user_msg)
+            elif user_msg == UserMessages.SIGN_OUT:
+                cls.sign_out(user, username)
         cls.users.remove(user_id)
     
     @classmethod
     def add_user(cls, user: socket, user_msg: str) -> str:
         user_details = UserMessages.pack(user_msg)
-        username, password = user_details
+        username, password, email, phone_number = user_details
         success = Database.add_user(user_details)
         if success:
             Network.send(user, UserMessages.REGISTER_OK)
@@ -77,12 +81,22 @@ class Server:
         success, reason = Database.sign_in_check(user_details)
         if success:
             Network.send(user, UserMessages.SIGN_IN_OK)
-            msg = UserMessages.user_connected(username)
+            msg = UserMessages.connected(username)
             print_colored('server', msg, cls.lock)
             return username
         else:
             Network.send(user, reason)
             return ''
+    
+    @classmethod
+    def sign_out(cls, user: socket, username: str):
+        success, reason = Database.sign_out(username)
+        if success:
+            Network.send(user, UserMessages.SIGN_OUT_OK)
+            msg = UserMessages.signed_out(username)
+            print_colored('server', msg, cls.lock)
+        else:
+            Network.send(user, reason)
 
 
     @classmethod
@@ -105,5 +119,4 @@ class Server:
 
 
 if __name__ == '__main__':
-    Database.init()
     Server.run()
