@@ -13,16 +13,23 @@ class UserSocket:
             return
         # Connect to server
         cls.user = Network.connected_socket(cls.server_ip)
+        if cls.user is None:
+            Main.server_not_running()
         print_colored('info', 'User has connected to the server')
         server_msg = Network.send_and_recv(cls.user, Messages.IS_USER)
         if server_msg != Messages.OK:
             print_colored('error', 'The server sent a message that is not OK. Exiting')
-            MainApp.disconnect()
+            Main.exit()
         cls.connected = True
     
     @classmethod
     def register(cls, user_details: Tuple[str, str, str, str]) -> Tuple[bool, str]:
-        server_msg = Network.send_and_recv(cls.user, UserMessages.register(user_details))
+        regsiter_msg = UserMessages.register(user_details)
+        try:
+            server_msg = Network.send_and_recv(cls.user, regsiter_msg)
+        except ProtocolError as e:
+            print_colored('error', e)
+            Main.exit()
         if server_msg == UserMessages.REGISTER_OK:
             return True, ''
         elif server_msg == UserMessages.USER_EXISTS:
@@ -30,15 +37,26 @@ class UserSocket:
 
     @classmethod
     def sign_in(cls, user_details: Tuple[str, str]) -> Tuple[bool, str]:
-        server_msg = Network.send_and_recv(cls.user, UserMessages.sign_in(user_details))
+        sign_in_msg = UserMessages.sign_in(user_details)
+        try:
+            server_msg = Network.send_and_recv(cls.user, sign_in_msg)
+        except ProtocolError as e:
+            print_colored('error', e)
+            Main.exit()
         if server_msg == UserMessages.SIGN_IN_OK:
             return True, server_msg
-        elif server_msg == UserMessages.NO_EXISTING_USER or server_msg == UserMessages.INCORRECT_PASS:
+        elif server_msg == UserMessages.NO_EXISTING_USER or \
+            server_msg == UserMessages.INCORRECT_PASS or \
+            server_msg == UserMessages.ALREADY_SIGNED_IN:
             return False, server_msg
+    
+    @classmethod
+    def send_sign_out_request(cls) -> Tuple[bool, str]:
+        sign_out_msg = UserMessages.SIGN_OUT
+        Network.send(cls.user, sign_out_msg)
 
     @classmethod
     def recieve_anti_virus_logs(cls):
-        # Wait for data
         while True:
             try:
                 server_msg = Network.recv(cls.user)
@@ -49,23 +67,24 @@ class UserSocket:
                 print_colored('info', Messages.CTRL_C)
                 cls.close()
                 return
-            except OSError as e:
-                if e.errno == 9:    # If the recv() function was interrupted due to thread termination
-                    exit(0)
 
-            # Handle virus message
+            # Handle server message
+            Main.check_sign_out_result(server_msg)
+            success, reason = Main.sign_out_result
+            if success:
+                break
             print_colored('server', server_msg)
-            MainApp.add_data(server_msg)
+            Main.add_data(server_msg)
 
             # Confirm message to server
             Network.send(cls.user, Messages.OK)
 
     @classmethod
     def close(cls):
-        print_colored('user', Messages.DISCONNECTION)
-        Network.send(cls.user, Messages.DISCONNECTION)
-        cls.user.close()
-        cls.connected = False
+        if cls.connected:
+            Network.send(cls.user, Messages.DISCONNECTION)
+            cls.user.close()
+            print_colored('user', Messages.DISCONNECTION)
 
 
 class GUI(QWidget):
@@ -86,7 +105,7 @@ class GUI(QWidget):
         self.setLayout(self.main_layout)
 
         # Create Exit button to use accross screens
-        self.exit_button = Button('Exit', MainApp.disconnect)
+        self.exit_button = Button('Exit', Main.exit)
 
         # Show Sign In screen
         self.show_sign_in_screen()
@@ -95,12 +114,10 @@ class GUI(QWidget):
         self.show()
 
 
-    def show_sign_in_screen(self):
-        # Make sure register screen is removed
-        try:
-            self.register_screen.remove()
-        except AttributeError:
-            pass
+    def show_sign_in_screen(self, former_screen: Optional[Screen] = None):
+        # Remove former screen
+        if former_screen:
+            former_screen.remove()
 
         # Create Sign In Screen
         width = 350
@@ -118,7 +135,7 @@ class GUI(QWidget):
         self.sign_in_screen.add_widget(password_field)
 
         # Sign In button
-        sign_in_button = Button('Sign In', lambda: MainApp.sign_in((
+        sign_in_button = Button('Sign In', lambda: Main.sign_in((
             username_field.text(),
             password_field.text()
             ,)))
@@ -129,6 +146,7 @@ class GUI(QWidget):
         self.sign_in_screen.add_widget(register_button, True)
 
         # Exit button
+        self.exit_button = Button('Exit', Main.exit)
         self.sign_in_screen.add_widget(self.exit_button, True)
 
 
@@ -164,7 +182,7 @@ class GUI(QWidget):
         self.register_screen.add_widget(phone_number_field)
 
         # Create register button
-        register_button = Button('Register', lambda: MainApp.register((
+        register_button = Button('Register', lambda: Main.register((
             username_field.text(),
             password_field.text(),
             confirm_pass_field.text(),
@@ -184,23 +202,23 @@ class GUI(QWidget):
         # Create Logs page
         width = 400
         height = 300
-        logs_screen = Screen(self, 'Anti Virus Logs', (width, height,))
-        logs_screen.center()
+        self.logs_screen = Screen(self, 'Anti Virus Logs', (width, height,))
+        self.logs_screen.center()
 
         # Add Label to Logs page
         label = Label('Virus Detections Logs:')
-        logs_screen.add_widget(label)
+        self.logs_screen.add_widget(label)
 
         # Add list view to Logs page
         self.list_view = ItemsList()
-        logs_screen.add_widget(self.list_view)
+        self.logs_screen.add_widget(self.list_view)
 
-        # Create Disconnect button
-        disconnect_button = Button('Disconnect', MainApp.disconnect)
-        logs_screen.add_widget(disconnect_button, True)
+        # Create sign out button
+        sign_out_button = Button('Sign Out', Main.sign_out)
+        self.logs_screen.add_widget(sign_out_button, True)
 
         # Add frame to main layout
-        self.main_layout.addWidget(logs_screen)
+        self.main_layout.addWidget(self.logs_screen)
 
 
     def add_data(self, data: str):
@@ -208,22 +226,16 @@ class GUI(QWidget):
 
 
 
-class MainApp:
+class Main:
+
+    sign_out_result: Tuple[bool, str] = (False, '')
 
     @classmethod
     def run(cls):
         app = QApplication(argv)
-
         cls.gui = GUI(app)
-
-        exit(app.exec())
-    
-
-    @classmethod
-    def connect_to_server(cls):
-        user_thread = Thread(target=UserSocket.connect_to_server)
-        user_thread.start()
-        user_thread.join()  # wait for the thread to terminate
+        exit_code = app.exec()
+        exit(exit_code)
 
 
     @classmethod
@@ -231,46 +243,72 @@ class MainApp:
         username, password, confirm_pass, email, phone_number = user_details
         if password != confirm_pass:
             pop_up = PopUp('Password and Confirm Password fields are not the same', PopUp.WARNING)
-            pop_up.show()
         else:
-            cls.connect_to_server()
+            UserSocket.connect_to_server()
             success, reason = UserSocket.register(user_details)
             if success:
                 pop_up = PopUp('Registration Completed', PopUp.INFO)
-                cls.gui.show_sign_in_screen()
+                cls.gui.show_sign_in_screen(cls.gui.register_screen)
             else:
                 pop_up = PopUp(reason, PopUp.WARNING)
-            pop_up.show()
+        pop_up.show()
     
     @classmethod
     def sign_in(cls, user_details: Tuple[str, str]):
-        cls.connect_to_server()
+        UserSocket.connect_to_server()
         success, reason = UserSocket.sign_in(user_details)
         if success:
             pop_up = PopUp('Sign In Successful!', PopUp.INFO)
             pop_up.show()
-            anti_virus_logs_thread = Thread(target=UserSocket.recieve_anti_virus_logs)
-            anti_virus_logs_thread.start()
-            cls.gui.show_anti_virus_logs_screen()
+            cls.show_anti_virus_logs()
+        else:
+            pop_up = PopUp(reason, PopUp.WARNING)
+            pop_up.show()
+    
+    @classmethod
+    def show_anti_virus_logs(cls):
+        cls.anti_virus_logs_thread = Thread(target=UserSocket.recieve_anti_virus_logs)
+        cls.anti_virus_logs_thread.start()
+        cls.gui.show_anti_virus_logs_screen()
+    
+    @classmethod
+    def sign_out(cls):
+        UserSocket.send_sign_out_request()
+        cls.anti_virus_logs_thread.join()
+        success, reason = cls.sign_out_result
+        if success:
+            cls.gui.show_sign_in_screen(cls.gui.logs_screen)
         else:
             pop_up = PopUp(reason, PopUp.WARNING)
             pop_up.show()
 
 
     @classmethod
+    def check_sign_out_result(cls, server_msg: str):
+        if server_msg == UserMessages.NO_EXISTING_USER or \
+            server_msg == UserMessages.NOT_SIGNED_IN:
+            cls.sign_out_result = (False, server_msg)
+        elif server_msg == UserMessages.SIGN_OUT_OK:
+            cls.sign_out_result = (True, '')
+
+
+    @classmethod
     def add_data(cls, data: str):
         cls.gui.add_data(data)
-    
+
+
     @classmethod
-    def disconnect(cls):
-        UserSocket.close()
+    def server_not_running(cls):
+        pop_up = PopUp('The server is not running', PopUp.CRITICAL)
+        pop_up.show()
         cls.exit()
 
     @classmethod
     def exit(cls):
+        UserSocket.close()
         print_colored('info', 'Exiting')
         exit(0)
 
 
 if __name__ == '__main__':
-    MainApp.run()
+    Main.run()
