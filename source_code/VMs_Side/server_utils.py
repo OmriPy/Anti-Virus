@@ -1,6 +1,6 @@
 from database import *
 
-class SocketID:
+class _SocketID:
 
     def __init__(self, sock: socket, id: int):
         self.sock = sock
@@ -12,13 +12,13 @@ class SocketsList:
     def __init__(self):
         """Management of list of sockets"""
 
-        self._sockets: List[SocketID] = []
+        self._sockets: List[_SocketID] = []
         self._current_id = 1
 
 
     def add(self, sock: socket) -> int:
         sock_id = self._current_id
-        self._sockets.append(SocketID(sock, sock_id))
+        self._sockets.append(_SocketID(sock, sock_id))
         self._current_id += 1
         return sock_id
 
