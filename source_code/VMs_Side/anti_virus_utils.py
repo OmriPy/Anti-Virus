@@ -18,13 +18,13 @@ class FindAndKillProcess:
     _pid_index: Dict[str, int] = {
         _OperatingSystems.WINDOWS: 1,
         _OperatingSystems.MAC_OS: 0,
-        _OperatingSystems.LINUX: 0
+        _OperatingSystems.LINUX: 1
     }
 
     _commands: Dict[str, str] = {
         _OperatingSystems.WINDOWS: 'tasklist /v',
         _OperatingSystems.MAC_OS: 'ps -A',
-        _OperatingSystems.LINUX: 'ps -A'
+        _OperatingSystems.LINUX: 'ps aux'
     }
 
 
@@ -72,8 +72,8 @@ class FindAndKillProcess:
         pids = []
         for proc in target_procs:
             words = proc.split()
-            _pid_index = self._pid_index[self._os]
-            pids.append(int(words[_pid_index]))
+            pid_index = self._pid_index[self._os]
+            pids.append(int(words[pid_index]))
         return pids
 
     def _kill_target_procs(self, pids: List[int]) -> bool:
