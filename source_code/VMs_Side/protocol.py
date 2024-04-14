@@ -7,7 +7,7 @@ class Network:
 
     @classmethod
     def listening_socket(cls, IP: str) -> socket:
-        """Returns a socket listening to the given IP"""
+        """Returns a socket listening to the given IP address"""
 
         sock = socket(_AF_INET, _SOCK_STREAM)
         try:
@@ -24,15 +24,16 @@ class Network:
         return sock
 
     @classmethod
-    def connected_socket(cls, IP: str) -> socket:
-        """Returns a socket connected to the given IP"""
+    def connected_socket(cls, IP: str) -> socket | None:
+        """Returns a socket connected to the given IP address"""
 
         sock = socket(_AF_INET, _SOCK_STREAM)
         try:
             sock.connect((IP, cls.PORT,))
         except ConnectionRefusedError:
             print_colored('error', 'The server is not running')
-            exit(0)
+            sock.close()
+            return None
         return sock
 
     @classmethod
@@ -49,7 +50,8 @@ class Network:
         try:
             msg = sock.recv(_Packet.MAX_TOTAL_SIZE).decode()
         except ConnectionResetError as e:
-            print_colored('error', e)
+            print_colored('error', e.strerror)
+            return
         msg = _Packet.unpack(msg)
 
         return msg[1]
@@ -94,30 +96,39 @@ class _Packet:
     @classmethod
     def flawed(cls, packet: str) -> Tuple[bool, str]:
         """Returns a tuple of flawed & reason.
-        
+
         Flawed - boolean representing whether the packet is flawed acoording to the protocol or not.
         True if it is, False otherwise.
-        
+
         Reason - string representing the reason to why the packet is flawed. If it isn't, Reason is empty.
         """
 
         if packet == '':
-            return True, 'Packet is empty'
+            return True, 'Empty packet'
+
         elif cls.DELIMITER not in packet:
             return True, 'No delimiter found in packet'
+
         elif packet.count(cls.DELIMITER) > 1:
             return True, 'Delimiter found multiple times in packet instead of once as expected'
+
         elif len(packet) > cls.MAX_TOTAL_SIZE:
             return True, 'Packet is bigger than maximum possible size'
+
         size, data = packet.split(cls.DELIMITER)
+
         if len(size) != cls.EXACT_SIZE_LENGTH:
             return True, 'The length of the size field is not the expected length'
+
         elif len(data) > cls.MAX_DATA_LENGTH:
             return True, 'The length of the data field is bigger than maximum possible size'
+
         elif not size.isnumeric():
             return True, 'The size field is not numeric'
+
         elif int(size) != len(data):
             return True, 'The length of the data field does not equal the size field\'s value'
+
         return False, ''
 
     @classmethod
@@ -140,7 +151,6 @@ class Messages:
     IS_ANTI_VIRUS = 'This is Anti virus'
     CONNECTED = '{}({}) has connected'
 
-
     @classmethod
     def anti_virus_connected(cls, sock_id: int) -> str:
         return cls.CONNECTED.format('Anti Virus', sock_id)
@@ -149,41 +159,47 @@ class Messages:
 
 class UserMessages:
 
-    USER_REMOVED = 'User ({}) has been removed'
-    
+    # Register
     REGISTER = 'Register: {}, {}, {}, {}'
     REGISTER_OK = 'Registration form is OK'
     USER_ADDED = 'User ({}) has been added'
-    USER_CONNECTED = 'User ({}) has connected'
-    
+
+    # Sign in    
     SIGN_IN = 'Sign_In: {}, {}'
     SIGN_IN_OK = 'Sign In is OK'
+    USER_CONNECTED = 'User ({}) has connected'
+
+    # Sign in errors
     USER_EXISTS = 'User already exists'
     NO_EXISTING_USER = 'No user exists with given username'
     INCORRECT_PASS = 'Password is incorrect'
+    ALREADY_SIGNED_IN = 'This user is currently signed in'
+
+    # Sign out
+    SIGN_OUT = 'Sign out'
+    SIGN_OUT_OK = 'Sign out OK'
+    USER_SIGNED_OUT = 'User ({}) has signed out'
+
+    # Sign out errors
+    NOT_SIGNED_IN = 'This user is not signed in'
+
+    # Other
+    # USER_REMOVED = 'User ({}) has been removed'
 
 
+    # Server related functions
     @classmethod
-    def user_connected(cls, username: str) -> str:
+    def connected(cls, username: str) -> str:
         return cls.USER_CONNECTED.format(username)
-
-    @classmethod
-    def removed(cls, username: str) -> str:
-        return cls.USER_REMOVED.format(username)
 
     @classmethod
     def added(cls, username: str) -> str:
         return cls.USER_ADDED.format(username)
-    
-    @classmethod
-    def register(cls, user_details: Tuple[str, str, str, str]) -> str:
-        username, password, confirm_pass, email, phone_number = user_details
-        return cls.REGISTER.format(username, password, email, phone_number)
 
     @classmethod
-    def sign_in(cls, user_details: Tuple[str, str]) -> str:
-        username, password = user_details
-        return cls.SIGN_IN.format(username, password)
+    def signed_out(cls, username: str) -> str:
+        return cls.USER_SIGNED_OUT.format(username)
+
 
     @classmethod
     def is_register(cls, msg: str) -> bool:
@@ -197,3 +213,19 @@ class UserMessages:
     def pack(cls, msg: str) -> Tuple:
         details = msg[msg.index(' ')+1:]
         return tuple(details.split(', '))
+
+
+    # User -> Server
+    @classmethod
+    def register(cls, user_details: Tuple[str, str, str, str]) -> str:
+        username, password, confirm_pass, email, phone_number = user_details
+        return cls.REGISTER.format(username, password, email, phone_number)
+
+    @classmethod
+    def sign_in(cls, user_details: Tuple[str, str]) -> str:
+        username, password = user_details
+        return cls.SIGN_IN.format(username, password)
+
+    '''@classmethod
+    def removed(cls, username: str) -> str:
+        return cls.USER_REMOVED.format(username)'''
