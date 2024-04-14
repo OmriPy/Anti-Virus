@@ -100,7 +100,7 @@ class Button(QPushButton):
         self.setSizePolicy(QSizePolicy.Policy.Maximum, QSizePolicy.Policy.Maximum)
         #self.setStyleSheet('padding: 0.5em; border-radius: 10px; background: white;')
 
-        if func != None:
+        if func:
             self.connect(func)
     
     def connect(self, func: Callable):
@@ -115,7 +115,6 @@ class InputLine(QLineEdit):
         self.setPlaceholderText(place_holder)
         if hide:
             self.setEchoMode(QLineEdit.EchoMode.Password)
-        self.setStyleSheet('color: white;')
 
 
 class InputField(BaseScreen):
@@ -161,8 +160,8 @@ class PopUp(QMessageBox):
     def __init__(self, text: str, type: int):
         super().__init__()
 
-        self.setIcon(self.ICONS[type])
         self.setText(text)
+        self.setIcon(self.ICONS[type])
     
     def show(self):
         self.exec()
