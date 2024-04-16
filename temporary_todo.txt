@@ -1,15 +1,8 @@
 Sorted by importance
 
 User options regarding database:
--   Log Out (disconnects from the server, but not being removed from the database)
 -   Delete user (removes the user from the database)
 
 General:
-*   Add a detailed explanation of how to make the router VM a router and how to make the user VM connected to the router
-*   Check if you can import a file that is in ../, if not, check how to import a file that is inside a different folder
-*   Add requirements.txt to the github
-*   Figure out why the user is getting an empty packet after printing 'Exiting'
-*   Make instances private: In all the files, add _ before every name of class, function, variable, etc that
-    is used privately
-*   Do something about the fact that there is an error if the client connects to the server but it is not running
 *   Start the book project
+*   Try again splitting the code to folders, and check if __init__.py is working for you
