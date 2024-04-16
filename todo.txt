@@ -15,7 +15,7 @@ Important - must for project (MOE's) requirements:
         - Communication protocol - DONE
         - Threads usage - DONE
         - Files access / API / COM (??) / Hardware components (microphone, camera, etc.)  - DONE??
-        - Encryption
+        - Encryption - HALF DONE (I have hashing)
         - Removing potential vulnerabilities in project
         - Interactive user interface (GUI) - DONE
 
@@ -26,11 +26,11 @@ Important - must for project (MOE's) requirements:
         - Create the Antivirus Server. Becuase a socket server is required.
           The server will get notification from an attacked client and send it to all clients. - DONE
         - Add multiclient functionallity to the server. Because a multiclient server is required - DONE
-        - Think about the ip the anti viruses and the clients connect to. on client VMs, the ip should not be localhost
     Operating systems:
         - Make sure that the multiclient server is using multithreading - DONE
         - Make sure that the virus detector uses the OS API to detect the virus - (DONE, I think)
-        - Install another kali linux in order to have 3 VMs
+        - Install another kali linux in order to have 3 VMs - DONE
+        - Decide which VM will run the server (preferrably not the router)
     Database:
         - Add to the antivirus server a database of Users - DONE
         - Implement registration and sign in screens in client - DONE
@@ -60,6 +60,7 @@ Important - must for project (MOE's) requirements:
           because the Scrypt hash has unencodeable characters.
         - Note that use python's naming convention and this is why some variables and classes names may start with
           an underscore (_), indicating they're for private use only.
+        - Note how you created the DNS server in the router and how you configured the clients to connect to this server
 
 
 General needs:
@@ -76,7 +77,10 @@ Nice to have:
         - Create a virus server that attacks the vulnerable web app and runs the virus on the victim PC [Host OS]
         - Add to the virus and its server command running functionallity [Host OS]
     GUI:
-        - Add option to log out and remove account (implement in server and database as well)
+        - Add option to log out (implement in server and database as well) - DONE
+        - Add option to remove account (implement in server and database as well)
         - Add in registration an option to specify the virus the user wants to kill
           (check if you can implement that becuase the anti virus is needed for this)
         - Add settings screen (you can change the virus name the user would like to kill, and more)
+    General:
+        - Add a DNS server to the router, and connect the client to it - DONE
