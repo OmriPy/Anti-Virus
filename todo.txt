@@ -83,4 +83,4 @@ Nice to have:
           (check if you can implement that becuase the anti virus is needed for this)
         - Add settings screen (you can change the virus name the user would like to kill, and more)
     General:
-        - Add a DNS server to the router, and connect the client to it - DONE
+        - Add a DNS server to the router, and connect the clients to it - DONE
