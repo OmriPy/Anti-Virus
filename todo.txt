@@ -77,7 +77,7 @@ Nice to have:
         - Create a virus [Host OS]
         - Create a virus server that attacks the vulnerable web app and runs the virus on the victim PC [Host OS]
         - Add to the virus and its server command running functionallity [Host OS]
-    GUI:
+    User:
         - Add option to log out (implement in server and database as well) - DONE
         - Add option to remove account (implement in server and database as well)
         - Add in registration an option to specify the virus the user wants to kill
@@ -85,5 +85,7 @@ Nice to have:
         - Add settings screen:
             1. (Think if you can even do that) Option to change the virus name the user would like to kill, and more
             2. Options to modify user details
+        - Change phone number field to password hint field, and if the user gets the error "Password is incorrect"
+          a lot of times (decide how many times), display the hint for the password for the user
     General:
         - Add a DNS server to the router, and connect the clients to it - DONE
