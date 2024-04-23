@@ -5,7 +5,7 @@ class AntiVirus:
 
     server_ip = '127.0.0.1'
     virus = 'lab_rat.py'
-    delay = 10
+    delay = 5
     possibilities: Dict[Tuple[bool, bool], str] = {
         (False, False): 'No virus detected',
         (True, True): 'The virus was detected and killed successfully',
@@ -26,9 +26,9 @@ class AntiVirus:
             print_colored('info', f'Virus is: {cls.virus}')
 
             # Main loop
+            virus_proc = FindAndKillProcess(cls.virus)
             while True:
                 # Perform virus scanning and send results to the server
-                virus_proc = FindAndKillProcess(cls.virus)
                 try:
                     killing_result = virus_proc.hunt()
                 except KeyboardInterrupt:
