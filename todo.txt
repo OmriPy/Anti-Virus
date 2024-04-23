@@ -97,5 +97,10 @@ Nice to have:
             2. Options to modify user details
         - Change phone number field to password hint field, and if the user gets the error "Password is incorrect"
           a lot of times (decide how many times), display the hint for the password for the user
+        - Add limitation to the registration form:
+          1.  No empty fields
+          2.  Phone number only like: xxx-xxxxxxx
+          3.  Email address only like: user@example.com
+          4.  Password: betweem 4 and 20 characters
     General:
         - Add a DNS server to the router, and connect the clients to it - DONE
