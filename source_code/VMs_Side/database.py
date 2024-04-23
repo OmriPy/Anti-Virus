@@ -47,7 +47,7 @@ class Database:
 
 
     @classmethod
-    def add_user(cls, user_details: Tuple[str, str, str, str]) -> bool:
+    def register(cls, user_details: Tuple[str, str, str, str]) -> bool:
         session = sessionmaker(bind=cls.engine)()
         username, password, email, phone_number = user_details
         new_user = User(username, password, email, phone_number)
@@ -63,7 +63,7 @@ class Database:
         return True
     
     @classmethod
-    def sign_in_check(cls, user_details: Tuple[str, str]) -> Tuple[bool, str]:
+    def sign_in(cls, user_details: Tuple[str, str]) -> Tuple[bool, str]:
         username, password = user_details
         wanted_user, session = cls._find_user(username)
 
