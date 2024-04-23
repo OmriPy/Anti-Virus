@@ -154,3 +154,51 @@ systemctl status automatic_set_defualt_gateway
 if you see `status=0/SUCCESS` it means the service is working properly.
 
 Now repeat this process for every VM you would like to connect to the router VM.
+
+### DNS Server
+I created a DNS server in my router this way:
+
+1. Installed dnsmasq:
+```
+sudo apt update
+sudo apt install dnsmasq
+```
+
+2. Added this to the `/etc/dnsmasq.conf` file:
+
+```
+# Specify DNS forwarders
+server=172.20.10.1
+
+# Specify DNS domain
+domain=antiVirusProject.local
+
+# Set DNS resolution for local domain
+address=/antiVirusProject.local/172.16.175.131
+```
+
+3. Restarted dnsmasq service:
+
+```
+sudo systemctl restart dnsmasq
+```
+
+4. In each client VM I edited the /etc/resolv.conf file:
+
+```
+nameserver 172.16.175.131
+```
+
+### New Default Gateway way
+In the client kali machines, you set the default gateway by adding:
+
+```
+# Define eth0 interface
+auto eth0
+iface eth0 inet static
+    address 172.16.175.130
+    netmask 255.255.255.0
+    gateway 172.16.175.131
+```
+
+to the `/etc/network/interfaces` file
