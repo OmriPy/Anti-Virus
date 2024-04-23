@@ -44,6 +44,7 @@ Important - must for project (MOE's) requirements:
         - Add "virus detected" notification to the user - DONE
         
     Book:
+        - Write the introduction
         - Add a screenshot of the list of used VMs which is in VMware Fusion Library
         - Add to technologies (modules) list: VMware Fusion
         - Note that the clients are Kali Linux machines
@@ -81,6 +82,8 @@ Nice to have:
         - Add option to remove account (implement in server and database as well)
         - Add in registration an option to specify the virus the user wants to kill
           (check if you can implement that becuase the anti virus is needed for this)
-        - Add settings screen (you can change the virus name the user would like to kill, and more)
+        - Add settings screen:
+            1. (Think if you can even do that) Option to change the virus name the user would like to kill, and more
+            2. Options to modify user details
     General:
         - Add a DNS server to the router, and connect the clients to it - DONE
