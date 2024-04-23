@@ -29,13 +29,14 @@ class SocketsList:
         print_colored('error', 'Socket was not found in the list and could not be removed')
         return -1
 
-    def remove(self, sock_id: int):
+    def remove(self, sock_id: int, close: bool = True):
         index = self._get_index(sock_id)
         if index == -1:
             return
         sock = self._sockets[index].sock
         self._sockets.pop(index)
-        sock.close()
+        if close:
+            sock.close()
 
     def send_to_all(self, data: str):
         for sockID in self._sockets:
