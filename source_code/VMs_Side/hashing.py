@@ -20,7 +20,7 @@ class ScryptHash:
         b64_salt = base64.b64encode(self.salt).decode()
         b64_hash = base64.b64encode(self.hash).decode()
         return f'{b64_salt}{self._SEP}{b64_hash}'
-    
+
     def compare(self, plaintext_password: str) -> bool:
         given_scrypt_hash = ScryptHash(plaintext_password, self.salt)
         return self.hash == given_scrypt_hash.hash
