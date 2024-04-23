@@ -3,5 +3,7 @@ Sorted by importance
 Whenever you run out of tasks, add tasks that you think are necessary from todo.txt in the repo to here
 
 General:
-*   Add encryption to the protocol
+*   Add encryption to the communication between server & user and anti virus:
+    * Put the code of RSA & AES in cryptography.py - DONE
+    * Implement RSA keys exchange in server and others implementations in server and clients (users and anti viruses)
 *   Write the introduction to the book (מבוא)
