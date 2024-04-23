@@ -1,7 +1,6 @@
-from typing import Tuple, List, Dict, Callable, Optional
 from colorama import init as _init, Fore as _Fore, Style as _Style
 
-_init()
+_init(autoreset=True)
 
 _colors = {
     'Server': _Fore.LIGHTBLACK_EX,
@@ -9,17 +8,18 @@ _colors = {
     'Anti virus': _Fore.CYAN,
     'Info': _Fore.RESET,
     'Database': _Fore.GREEN,
+    'Debug': _Fore.LIGHTBLUE_EX,
     'Warning': _Fore.YELLOW,
     'Error': _Fore.LIGHTRED_EX
 }
 
 def _colorful_str(color: str, prefix: str, msg: str, sock_id: int = 0, username: str = '') -> str:
     if username != '':
-        return f"{_Style.BRIGHT}{color}[{prefix} ({username})]: {msg}{_Style.RESET_ALL}"
+        return f"{_Style.BRIGHT}{color}[{prefix} ({username})]: {msg}"
     elif sock_id != 0:
-        return f"{_Style.BRIGHT}{color}[{prefix}({sock_id})]: {msg}{_Style.RESET_ALL}"
+        return f"{_Style.BRIGHT}{color}[{prefix}({sock_id})]: {msg}"
     else:
-        return f"{_Style.BRIGHT}{color}[{prefix}]: {msg}{_Style.RESET_ALL}"
+        return f"{_Style.BRIGHT}{color}[{prefix}]: {msg}"
 
 def print_colored(prefix: str, msg: str, lock = None, sock_id: int = 0, username: str = ''):
     """
@@ -40,9 +40,9 @@ def print_colored(prefix: str, msg: str, lock = None, sock_id: int = 0, username
     prefix = prefix.capitalize()
     color = _colors.get(prefix, _Fore.WHITE)
     string = _colorful_str(color, prefix, msg, sock_id, username)
-    if lock == None:
-        print(string)
-    else:
+    if lock:
         lock.acquire()
         print(string)
         lock.release()
+    else:
+        print(string)
