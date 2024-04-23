@@ -1,5 +1,6 @@
-from colored_printing import *
 from socket import socket, AF_INET as _AF_INET, SOCK_STREAM as _SOCK_STREAM
+from colored_printing import *
+from utils import *
 
 class Network:
 
@@ -50,10 +51,9 @@ class Network:
         try:
             msg = sock.recv(_Packet.MAX_TOTAL_SIZE).decode()
         except ConnectionResetError as e:
-            print_colored('error', e.strerror)
-            return
-        msg = _Packet.unpack(msg)
+            raise ProtocolError(e.strerror)
 
+        msg = _Packet.unpack(msg)
         return msg[1]
 
     @classmethod
@@ -90,9 +90,9 @@ class _Packet:
 
         if size > cls.MAX_DATA_LENGTH:
             raise ProtocolError(ProtocolError.BIGGER_THAN_MAX)
-        
+
         return str(size).zfill(cls.EXACT_SIZE_LENGTH) + cls.DELIMITER + data
-    
+
     @classmethod
     def flawed(cls, packet: str) -> Tuple[bool, str]:
         """Returns a tuple of flawed & reason.
@@ -149,7 +149,7 @@ class Messages:
     CTRL_C = 'Exiting due to CTRL+C'
     IS_USER = 'This is User'
     IS_ANTI_VIRUS = 'This is Anti virus'
-    CONNECTED = '{}({}) has connected'
+    CONNECTED = '{}({}) connected'
 
     @classmethod
     def anti_virus_connected(cls, sock_id: int) -> str:
@@ -167,7 +167,7 @@ class UserMessages:
     # Sign in    
     SIGN_IN = 'Sign_In: {}, {}'
     SIGN_IN_OK = 'Sign In is OK'
-    USER_CONNECTED = 'User ({}) has connected'
+    USER_SIGNED_IN = 'User ({}) signed in'
 
     # Sign in errors
     USER_EXISTS = 'User already exists'
@@ -178,7 +178,7 @@ class UserMessages:
     # Sign out
     SIGN_OUT = 'Sign out'
     SIGN_OUT_OK = 'Sign out OK'
-    USER_SIGNED_OUT = 'User ({}) has signed out'
+    USER_SIGNED_OUT = 'User ({}) signed out'
 
     # Sign out errors
     NOT_SIGNED_IN = 'This user is not signed in'
@@ -189,8 +189,8 @@ class UserMessages:
 
     # Server related functions
     @classmethod
-    def connected(cls, username: str) -> str:
-        return cls.USER_CONNECTED.format(username)
+    def signed_in(cls, username: str) -> str:
+        return cls.USER_SIGNED_IN.format(username)
 
     @classmethod
     def added(cls, username: str) -> str:
@@ -203,16 +203,31 @@ class UserMessages:
 
     @classmethod
     def is_register(cls, msg: str) -> bool:
-        return msg.startswith(cls.REGISTER[:cls.REGISTER.index(':')])
+        try:
+            return msg.startswith(cls.REGISTER[:cls.REGISTER.index(':')])
+        except AttributeError:
+            err_msg = f'Function {func_name(cls.is_register, cls)} received a Non-str argument: {type(msg)}'
+            print_colored('error', err_msg)
+            return False
 
     @classmethod
     def is_sign_in(cls, msg: str) -> bool:
-        return msg.startswith(cls.SIGN_IN[:cls.SIGN_IN.index(':')])
+        try:
+            return msg.startswith(cls.SIGN_IN[:cls.SIGN_IN.index(':')])
+        except AttributeError:
+            err_msg = f'Function {func_name(cls.is_sign_in, cls)} received a Non-str argument: {type(msg)}'
+            print_colored('error', err_msg)
+            return False
 
     @classmethod
-    def pack(cls, msg: str) -> Tuple:
-        details = msg[msg.index(' ')+1:]
-        return tuple(details.split(', '))
+    def pack(cls, msg: str) -> Tuple | None:
+        try:
+            details = msg[msg.index(' ')+1:]
+            return tuple(details.split(', '))
+        except AttributeError:
+            err_msg = f'Function {func_name(cls.pack, cls)} received a Non-str argument: {type(msg)}'
+            print_colored('error', err_msg)
+            return None
 
 
     # User -> Server
