@@ -42,13 +42,12 @@ class FindAndKillProcess:
         Returns (False, False) if the process was not detected,
         (True, False) if the process was detected, but could not be killed,
         and (True, True) if it was detected and killed successfully."""
-        
+
         all_procs = self._all_procs()
         found_procs = self._filter_target(all_procs)
         if len(found_procs) == 0:
             found = False
             killed = False
-            print_colored('anti virus' ,'Virus was not detected')
         else:
             found = True
             print_colored('anti virus' ,'Virus detected')
