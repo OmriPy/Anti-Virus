@@ -104,3 +104,4 @@ Nice to have:
           4.  Password: betweem 4 and 20 characters
     General:
         - Add a DNS server to the router, and connect the clients to it - DONE
+        - Seperate the files in source_code folder into sub-folders (__init__.py is required)
