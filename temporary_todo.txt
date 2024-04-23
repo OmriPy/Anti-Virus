@@ -1,8 +1,7 @@
 Sorted by importance
 
-User options regarding database:
--   Delete user (removes the user from the database)
+Whenever you run out of tasks, add tasks that you think are necessary from todo.txt in the repo to here
 
 General:
-*   Start the book project
-*   Try again splitting the code to folders, and check if __init__.py is working for you
+*   Add encryption to the protocol
+*   Write the introduction to the book (מבוא)
