@@ -19,12 +19,12 @@ class BaseScreen(QFrame):
             self.setFrameShape(QFrame.Shape.Box)
         
         self.main_window.layout().addWidget(self)
-    
+
     def add_widget(self, widg: QWidget, center: bool = False):
         self.frame_layout.addWidget(widg)
         if center:
             self.frame_layout.setAlignment(widg, Qt.AlignmentFlag.AlignHCenter)
-    
+
     def set_size(self, width: int, height: int):
         self.main_window.setFixedSize(width, height)
 
@@ -109,7 +109,7 @@ class Button(QPushButton):
 
 class InputLine(QLineEdit):
 
-    def __init__(self, place_holder: str, hide: bool = False, initial_text: str = ''):
+    def __init__(self, place_holder: str, hide: bool, initial_text: str = ''):
         super().__init__(initial_text)
 
         self.setPlaceholderText(place_holder)
@@ -126,9 +126,9 @@ class InputField(BaseScreen):
                  hide: bool = False,
                  initial_text: str = ''):
         """Object containing a Label and InputLine variable, represnting a field that asks for input"""
-        
+
         super().__init__(window)
-        
+
         place_holder = place_holder or f'Enter your {sub_title.lower()} here'
         sub_title = f'{sub_title}:'
         self.sub_title = Label(sub_title)
