@@ -13,7 +13,7 @@ class UserSocket:
             return
         # Connect to server
         cls.user = Network.connected_socket(cls.server_ip)
-        if cls.user is None:
+        if not cls.user:
             Main.server_not_running()
         print_colored('info', 'User has connected to the server')
         server_msg = Network.send_and_recv(cls.user, Messages.IS_USER)
@@ -21,7 +21,7 @@ class UserSocket:
             print_colored('error', 'The server sent a message that is not OK. Exiting')
             Main.exit()
         cls.connected = True
-    
+
     @classmethod
     def register(cls, user_details: Tuple[str, str, str, str]) -> Tuple[bool, str]:
         regsiter_msg = UserMessages.register(user_details)
@@ -49,11 +49,12 @@ class UserSocket:
             server_msg == UserMessages.INCORRECT_PASS or \
             server_msg == UserMessages.ALREADY_SIGNED_IN:
             return False, server_msg
+        else:
+            return False, 'General error'
     
     @classmethod
     def send_sign_out_request(cls) -> Tuple[bool, str]:
-        sign_out_msg = UserMessages.SIGN_OUT
-        Network.send(cls.user, sign_out_msg)
+        Network.send(cls.user, UserMessages.SIGN_OUT)
 
     @classmethod
     def recieve_anti_virus_logs(cls):
@@ -65,18 +66,15 @@ class UserSocket:
                 return
             except KeyboardInterrupt:
                 print_colored('info', Messages.CTRL_C)
-                cls.close()
-                return
+                Main.exit()
 
-            # Handle server message
-            Main.check_sign_out_result(server_msg)
-            success, reason = Main.sign_out_result
+            Main.update_sign_out_status(server_msg)
+            success, reason = Main.sign_out_status
             if success:
                 break
+
             print_colored('server', server_msg)
             Main.add_data(server_msg)
-
-            # Confirm message to server
             Network.send(cls.user, Messages.OK)
 
     @classmethod
@@ -200,8 +198,8 @@ class GUI(QWidget):
         self.sign_in_screen.remove()
 
         # Create Logs page
-        width = 400
-        height = 300
+        width = 425
+        height = 350
         self.logs_screen = Screen(self, 'Anti Virus Logs', (width, height,))
         self.logs_screen.center()
 
@@ -228,7 +226,7 @@ class GUI(QWidget):
 
 class Main:
 
-    sign_out_result: Tuple[bool, str] = (False, '')
+    sign_out_status: Tuple[bool, str] = (False, '')
 
     @classmethod
     def run(cls):
@@ -264,18 +262,24 @@ class Main:
         else:
             pop_up = PopUp(reason, PopUp.WARNING)
             pop_up.show()
-    
+
     @classmethod
     def show_anti_virus_logs(cls):
+        cls.anti_virus_logs_thread = None
+        if cls.anti_virus_logs_thread and cls.anti_virus_logs_thread.is_alive():
+            return
         cls.anti_virus_logs_thread = Thread(target=UserSocket.recieve_anti_virus_logs)
         cls.anti_virus_logs_thread.start()
+        '''print_colored('debug', f'After starting thread: {cls.anti_virus_logs_thread.is_alive()}')
+        time.sleep(1)
+        print_colored('debug', f'1 second after starting thread: {cls.anti_virus_logs_thread.is_alive()}')'''
         cls.gui.show_anti_virus_logs_screen()
-    
+
     @classmethod
     def sign_out(cls):
         UserSocket.send_sign_out_request()
         cls.anti_virus_logs_thread.join()
-        success, reason = cls.sign_out_result
+        success, reason = cls.sign_out_status
         if success:
             cls.gui.show_sign_in_screen(cls.gui.logs_screen)
         else:
@@ -284,12 +288,13 @@ class Main:
 
 
     @classmethod
-    def check_sign_out_result(cls, server_msg: str):
-        if server_msg == UserMessages.NO_EXISTING_USER or \
-            server_msg == UserMessages.NOT_SIGNED_IN:
-            cls.sign_out_result = (False, server_msg)
-        elif server_msg == UserMessages.SIGN_OUT_OK:
-            cls.sign_out_result = (True, '')
+    def update_sign_out_status(cls, server_msg: str):
+        status_map: Dict[str, Tuple[bool, str]] = {
+            UserMessages.NO_EXISTING_USER: (False, server_msg),
+            UserMessages.NOT_SIGNED_IN: (False, server_msg),
+            UserMessages.SIGN_OUT_OK: (True, '')
+        }
+        cls.sign_out_status = status_map.get(server_msg, (False, '',))
 
 
     @classmethod
