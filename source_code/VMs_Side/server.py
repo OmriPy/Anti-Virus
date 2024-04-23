@@ -10,11 +10,11 @@ class Server:
 
     @classmethod
     def run(cls):
-        Database.init()
         with Network.listening_socket('0.0.0.0') as server:
+            Database.init()
             while True:
                 try:
-                    client, cli_add = server.accept()
+                    client, _ = server.accept()
                 except KeyboardInterrupt:
                     print_colored('info', Messages.CTRL_C)
                     return
@@ -41,7 +41,6 @@ class Server:
 
     @classmethod
     def handle_user(cls, user: socket):
-        user_id = cls.users.add(user)
         username = ''
         while True:
             try:
@@ -49,24 +48,28 @@ class Server:
             except ProtocolError as e:
                 print_colored('error', e, cls.lock)
                 break
-            if user_msg == Messages.OK and username != '':
-                print_colored('user', user_msg, cls.lock, username=username)
-            if user_msg == Messages.DISCONNECTION and username != '':
-                print_colored('user', user_msg, cls.lock, username=username)
-                break
+
             if UserMessages.is_register(user_msg):
-                username = cls.add_user(user, user_msg)
+                username = cls.register_new_user(user, user_msg)
             elif UserMessages.is_sign_in(user_msg):
-                username = cls.sign_in_check(user, user_msg)
+                username, user_id = cls.authenticate_user_sign_in(user, user_msg)
             elif user_msg == UserMessages.SIGN_OUT:
-                cls.sign_out(user, username)
-        cls.users.remove(user_id)
-    
+                username = cls.sign_out(user, username, user_id)
+
+            elif user_msg == Messages.OK:
+                print_colored('user', user_msg, cls.lock, username=username)
+            elif user_msg == Messages.DISCONNECTION:
+                break
+        user.close()
+
+
     @classmethod
-    def add_user(cls, user: socket, user_msg: str) -> str:
+    def register_new_user(cls, user: socket, user_msg: str) -> str:
         user_details = UserMessages.pack(user_msg)
+        if not user_details:
+            return ''
         username, password, email, phone_number = user_details
-        success = Database.add_user(user_details)
+        success = Database.register(user_details)
         if success:
             Network.send(user, UserMessages.REGISTER_OK)
             return username
@@ -75,28 +78,33 @@ class Server:
             return ''
 
     @classmethod
-    def sign_in_check(cls, user: socket, user_msg: str) -> str:
+    def authenticate_user_sign_in(cls, user: socket, user_msg: str) -> Tuple[str, int]:
         user_details = UserMessages.pack(user_msg)
+        if not user_details:
+            return ''
         username, password = user_details
-        success, reason = Database.sign_in_check(user_details)
+        success, reason = Database.sign_in(user_details)
         if success:
             Network.send(user, UserMessages.SIGN_IN_OK)
-            msg = UserMessages.connected(username)
+            msg = UserMessages.signed_in(username)
+            user_id = cls.users.add(user)
             print_colored('server', msg, cls.lock)
-            return username
+            return username, user_id
         else:
             Network.send(user, reason)
-            return ''
+            return '', -1
     
     @classmethod
-    def sign_out(cls, user: socket, username: str):
+    def sign_out(cls, user: socket, username: str, user_id: int):
         success, reason = Database.sign_out(username)
         if success:
             Network.send(user, UserMessages.SIGN_OUT_OK)
             msg = UserMessages.signed_out(username)
+            cls.users.remove(user_id, False)
             print_colored('server', msg, cls.lock)
         else:
             Network.send(user, reason)
+        return ''
 
 
     @classmethod
