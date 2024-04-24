@@ -14,35 +14,35 @@ Important - must for project (MOE's) requirements:
         - Multi-client server - DONE
         - Communication protocol - DONE
         - Threads usage - DONE
-        - Files access / API / COM (??) / Hardware components (microphone, camera, etc.)  - DONE (I create and use the file database.db for users management)
+        - Files access / API / COM / Hardware components (microphone, camera, etc.)  - DONE (I create and use the file database.db for users management)
         - Encryption - DONE
         - Removing potential vulnerabilities in project
         - Interactive user interface (GUI) - DONE
 
     OOP:
-        - Make sure that the entire project uses at least 4 OOP classes - DONE
+        - Make sure the entire project uses at least 4 OOP classes - DONE
     Networking:
         - Create a protocol for the antivirus and its server - DONE
-        - Create the Antivirus Server. Becuase a socket server is required.
-          The server will get notification from an attacked client and send it to all clients. - DONE
+        - Create the Antivirus Server. Becuase a socket server is required. The server will get notification from an attacked
+          client and send it to all clients - DONE
         - Add multiclient functionallity to the server. Because a multiclient server is required - DONE
     Operating systems:
-        - Make sure that the multiclient server is using multithreading - DONE
-        - Make sure that the virus detector uses the OS API to detect the virus - (DONE, I think)
+        - Make sure the multiclient server is using multithreading - DONE
+        - Make sure the server is using the file system (managing database.db) - DONE
         - Install another kali linux in order to have 3 VMs - DONE
         - Decide which VM will run the server (preferrably not the router)
     Database:
-        - Add to the antivirus server a database of Users - DONE
+        - Add to the server a database of users - DONE
         - Implement registration and sign in screens in client - DONE
         - At least 4 input fields in registration - DONE
         - Save the user password in hash - DONE
     Security:
         - Use hashing for password management in the database - DONE
-        - Add encryption to the protocol - DONE
-        - Remove every potential vulnerability your project may have (XSS, SQL injection, etc.)
+        - Add encryption using RSA and AES to the protocol - DONE
+        - Remove any potential vulnerability your project may have (XSS, SQL injection, etc.)
     GUI:
         - Add "virus detected" notification to the user - DONE
-        
+
     Book:
         - Write the introduction
         - Draw this and put in the book:
