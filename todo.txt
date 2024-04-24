@@ -87,7 +87,7 @@ Nice to have:
         - Create a virus [Host OS]
         - Create a virus server that attacks the vulnerable web app and runs the virus on the victim PC [Host OS]
         - Add to the virus and its server command running functionallity [Host OS]
-    User:
+    Regarding User:
         - Add option to log out (implement in server and database as well) - DONE
         - Add option to remove account (implement in server and database as well)
         - Add in registration an option to specify the virus the user wants to kill
@@ -102,6 +102,9 @@ Nice to have:
           2.  Phone number only like: xxx-xxxxxxx
           3.  Email address only like: user@example.com
           4.  Password: betweem 4 and 20 characters
+    Regarding Anti Virus:
+        - Change the string the anti virus is sending to the server to include the name of the process that was killed
+          and the hour it was killed (13:05 for example)
     Regrading the LAN:
         - Add a DNS server to the router, and connect the clients to it - DONE
     General:
