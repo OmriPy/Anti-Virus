@@ -14,7 +14,7 @@ Important - must for project (MOE's) requirements:
         - Multi-client server - DONE
         - Communication protocol - DONE
         - Threads usage - DONE
-        - Files access / API / COM (??) / Hardware components (microphone, camera, etc.)  - DONE??
+        - Files access / API / COM (??) / Hardware components (microphone, camera, etc.)  - DONE (I create and use the file database.db for users management)
         - Encryption - DONE
         - Removing potential vulnerabilities in project
         - Interactive user interface (GUI) - DONE
