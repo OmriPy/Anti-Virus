@@ -102,6 +102,9 @@ Nice to have:
           2.  Phone number only like: xxx-xxxxxxx
           3.  Email address only like: user@example.com
           4.  Password: betweem 4 and 20 characters
-    General:
+    Regrading the LAN:
         - Add a DNS server to the router, and connect the clients to it - DONE
+    General:
         - Seperate the files in source_code folder into sub-folders (__init__.py is required)
+        - Modify the README.md file in this repo to explain everything about this project (do it only when you have free time because it's not essential.
+          preferrably after submitting the project to MOE)
