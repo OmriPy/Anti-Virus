@@ -15,7 +15,7 @@ Important - must for project (MOE's) requirements:
         - Communication protocol - DONE
         - Threads usage - DONE
         - Files access / API / COM (??) / Hardware components (microphone, camera, etc.)  - DONE??
-        - Encryption - HALF DONE (I have hashing)
+        - Encryption - DONE
         - Removing potential vulnerabilities in project
         - Interactive user interface (GUI) - DONE
 
@@ -38,7 +38,7 @@ Important - must for project (MOE's) requirements:
         - Save the user password in hash - DONE
     Security:
         - Use hashing for password management in the database - DONE
-        - Add encryption to the protocol
+        - Add encryption to the protocol - DONE
         - Remove every potential vulnerability your project may have (XSS, SQL injection, etc.)
     GUI:
         - Add "virus detected" notification to the user - DONE
