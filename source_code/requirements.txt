@@ -5,3 +5,4 @@ PyQt6-tools==6.*
 colorama==0.4.5
 SQLAlchemy==1.*
 scrypt==0.8.24
+pycryptodome==3.20.0
