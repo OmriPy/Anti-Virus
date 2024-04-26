@@ -90,18 +90,19 @@ Nice to have:
     Regarding User:
         - Add option to log out (implement in server and database as well) - DONE
         - Add option to remove account (implement in server and database as well)
+        - Change phone number field to password hint field, and if the user gets the error "Password is incorrect"
+          a lot of times (decide how many times), display the hint for the password for the user
+        - Add limitation to the registration form:
+          1.  No empty fields - DONE
+          2.  Phone number only like: xxx-xxxxxxx
+          3.  Email address only like: user@example.com - DONE
+          4.  Password: betweem 4 and 20 characters - DONE
+        - Add a button in registration to back to sign in screen
         - Add in registration an option to specify the virus the user wants to kill
           (check if you can implement that becuase the anti virus is needed for this)
         - Add settings screen:
             1. (Think if you can even do that) Option to change the virus name the user would like to kill, and more
             2. Options to modify user details
-        - Change phone number field to password hint field, and if the user gets the error "Password is incorrect"
-          a lot of times (decide how many times), display the hint for the password for the user
-        - Add limitation to the registration form:
-          1.  No empty fields
-          2.  Phone number only like: xxx-xxxxxxx
-          3.  Email address only like: user@example.com
-          4.  Password: betweem 4 and 20 characters
     Regarding Anti Virus:
         - Change the string the anti virus is sending to the server to include the name of the process that was killed
           and the hour it was killed (13:05 for example)
