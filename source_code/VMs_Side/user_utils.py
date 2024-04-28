@@ -1,6 +1,7 @@
 from protocol import *
-from PyQt6.QtWidgets import (QApplication, QWidget, QVBoxLayout,
-    QPushButton, QFrame, QLabel, QListWidget, QListWidgetItem, QLineEdit,QSizePolicy, QMessageBox)
+from PyQt6.QtWidgets import \
+    QApplication, QWidget, QVBoxLayout, QPushButton, QFrame, QLabel, \
+    QListWidget, QListWidgetItem, QLineEdit,QSizePolicy, QMessageBox
 from PyQt6.QtCore import Qt
 
 
@@ -10,7 +11,7 @@ class BaseScreen(QFrame):
         super().__init__()
 
         self.main_window = window
-        self.app = window.app
+        self.app: QApplication = window.app
 
         self.frame_layout = QVBoxLayout()
         self.setLayout(self.frame_layout)
@@ -37,7 +38,7 @@ class Screen(BaseScreen):
     def __init__(self,
                  window: QWidget,
                  title: str = '',
-                 size: Tuple[int, int] = (0, 0)):
+                 size: Tuple[int, int] = (0, 0,)):
         """Object used to represent a screen"""
         
         super().__init__(window, True)
@@ -94,11 +95,10 @@ class Label(QLabel):
 
 class Button(QPushButton):
 
-    def __init__(self, text: str = '', func: Callable = None):
+    def __init__(self, text: str = '', func: Optional[Callable] = None):
         super().__init__(text)
 
         self.setSizePolicy(QSizePolicy.Policy.Maximum, QSizePolicy.Policy.Maximum)
-        #self.setStyleSheet('padding: 0.5em; border-radius: 10px; background: white;')
 
         if func:
             self.connect(func)
@@ -109,7 +109,7 @@ class Button(QPushButton):
 
 class InputLine(QLineEdit):
 
-    def __init__(self, place_holder: str, hide: bool, initial_text: str = ''):
+    def __init__(self, place_holder: str, hide: bool, initial_text: str):
         super().__init__(initial_text)
 
         self.setPlaceholderText(place_holder)
