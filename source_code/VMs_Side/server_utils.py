@@ -1,10 +1,11 @@
 from database import *
 
-class _SocketID:
+class _Socket:
 
-    def __init__(self, sock: socket, id: int):
+    def __init__(self, sock: socket, id: int, aes: AESCipher):
         self.sock = sock
         self.sock_id = id
+        self.aes = aes
 
 
 class SocketsList:
@@ -12,13 +13,13 @@ class SocketsList:
     def __init__(self):
         """Management of list of sockets"""
 
-        self._sockets: List[_SocketID] = []
+        self._sockets: List[_Socket] = []
         self._current_id = 1
 
 
-    def add(self, sock: socket) -> int:
+    def add(self, sock: socket, aes: AESCipher) -> int:
         sock_id = self._current_id
-        self._sockets.append(_SocketID(sock, sock_id))
+        self._sockets.append(_Socket(sock, sock_id, aes))
         self._current_id += 1
         return sock_id
 
@@ -26,7 +27,7 @@ class SocketsList:
         for i in range(len(self._sockets)):
             if self._sockets[i].sock_id == sock_id:
                 return i
-        print_colored('error', 'Socket was not found in the list and could not be removed')
+        print_colored(Prefixes.ERROR, 'Socket was not found in the list and could not be removed')
         return -1
 
     def remove(self, sock_id: int, close: bool = True):
@@ -39,5 +40,5 @@ class SocketsList:
             sock.close()
 
     def send_to_all(self, data: str):
-        for sockID in self._sockets:
-            Network.send(sockID.sock, data)
+        for socket in self._sockets:
+            Network.send(socket.sock, data, socket.aes)
