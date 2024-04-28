@@ -1,5 +1,5 @@
 from protocol import *
-from hashing import *
+from hashing import ScryptHash
 from sqlalchemy import create_engine, MetaData, Table, Column, String, Boolean
 from sqlalchemy.orm import mapper, sessionmaker
 from sqlalchemy.exc import IntegrityError
@@ -18,12 +18,9 @@ class User:
 
 class Database:
 
-    db_file = 'database.db'
-
     @classmethod
-    def init(cls):
-        cls.engine = create_engine(f'sqlite:///{cls.db_file}')
-
+    def init(cls, db_file: str = 'database.db'):
+        cls.engine = create_engine(f'sqlite:///{db_file}')
         metadata = MetaData()
 
         users_table = Table('users', metadata,
@@ -35,7 +32,6 @@ class Database:
         )
 
         mapper(User, users_table)
-
         metadata.create_all(cls.engine)
     
 
@@ -55,10 +51,10 @@ class Database:
         try:
             session.commit()
         except IntegrityError:
-            print_colored('error', UserMessages.USER_EXISTS)
+            print_colored(Prefixes.ERROR, UserMessages.Register.Errors.USER_EXISTS)
             session.close()
             return False
-        print_colored('database', UserMessages.added(username))
+        print_colored(Prefixes.DATABASE, UserMessages.Register.added(username))
         session.close()
         return True
     
@@ -69,10 +65,10 @@ class Database:
 
         if wanted_user is None:
             session.close()
-            return False, UserMessages.NO_EXISTING_USER
+            return False, UserMessages.SignIn.Errors.NO_EXISTING_USER
         if wanted_user.signed_in:
             session.close()
-            return False, UserMessages.ALREADY_SIGNED_IN
+            return False, UserMessages.SignIn.Errors.ALREADY_SIGNED_IN
         if ScryptHash.create_from_b64(wanted_user.base64_password).compare(password):
             wanted_user.signed_in = True
             session.commit()
@@ -80,15 +76,15 @@ class Database:
             return True, ''
         else:
             session.close()
-            return False, UserMessages.INCORRECT_PASS
+            return False, UserMessages.SignIn.Errors.INCORRECT_PASS
     
     @classmethod
     def sign_out(cls, username: str) -> Tuple[bool, str]:
         wanted_user, session = cls._find_user(username)
-        if wanted_user is None:
-            return False, UserMessages.NO_EXISTING_USER
+        if not wanted_user:
+            return False, UserMessages.SignOut.Errors.USER_NOT_FOUND
         if not wanted_user.signed_in:
-            return False, UserMessages.NOT_SIGNED_IN
+            return False, UserMessages.SignOut.Errors.NOT_SIGNED_IN
         wanted_user.signed_in = False
         session.commit()
         session.close()
@@ -102,7 +98,7 @@ class Database:
         if wanted_user:
             session.delete(wanted_user)
             session.commit()
-            print_colored('database', UserMessages.removed(username))
+            print_colored(Prefixes.DATABASE, UserMessages.removed(username))
         else:
-            print_colored('error', 'User could not be removed')
+            print_colored(Prefixes.ERROR, 'User could not be removed')
         session.close()'''
