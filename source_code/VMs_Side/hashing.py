@@ -1,4 +1,5 @@
-import scrypt, secrets, base64
+import scrypt, secrets
+from base64 import b64encode, b64decode
 from typing import Optional
 
 class ScryptHash:
@@ -17,8 +18,8 @@ class ScryptHash:
         return secrets.token_bytes(cls._SALT_SIZE)
 
     def create_b64_hash(self) -> str:
-        b64_salt = base64.b64encode(self.salt).decode()
-        b64_hash = base64.b64encode(self.hash).decode()
+        b64_salt = b64encode(self.salt).decode()
+        b64_hash = b64encode(self.hash).decode()
         return f'{b64_salt}{self._SEP}{b64_hash}'
 
     def compare(self, plaintext_password: str) -> bool:
@@ -28,8 +29,8 @@ class ScryptHash:
     @classmethod
     def create_from_b64(cls, b64_password: str) -> 'ScryptHash':
         b64_salt, b64_scrypt_hash = b64_password.split(cls._SEP, 1)
-        scrypt_salt = base64.b64decode(b64_salt)
-        scrypt_hash = base64.b64decode(b64_scrypt_hash)
+        scrypt_salt = b64decode(b64_salt)
+        scrypt_hash = b64decode(b64_scrypt_hash)
 
         scrypt_hash_object = ScryptHash('', scrypt_salt)
         scrypt_hash_object.hash = scrypt_hash
