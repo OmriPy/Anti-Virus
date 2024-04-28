@@ -1,7 +1,6 @@
 from protocol import *
 import os, subprocess, platform
 
-
 class _OperatingSystems:
 
     WINDOWS = 'Windows'
@@ -50,7 +49,7 @@ class FindAndKillProcess:
             killed = False
         else:
             found = True
-            print_colored('anti virus' ,'Virus detected')
+            print_colored(Prefixes.ANTI_VIRUS ,'Virus detected')
             pids = self._pids_of_target(found_procs)
             killed = self._kill_target_procs(pids)
         return found, killed
@@ -82,17 +81,17 @@ class FindAndKillProcess:
                 try:
                     subprocess.run(['taskkill', '/F', '/T', '/PID', f'{pid}'], check=True)
                 except subprocess.CalledProcessError as e:
-                    print_colored('error', f'Virus could not be killed: {e}')
+                    print_colored(Prefixes.WARNING, f'Virus could not be killed because: {e}')
                     return False
         else:
             for pid in pids:
                 try:
                     os.kill(pid, 9)    # 9 = signal.SIGKILL
                 except PermissionError:
-                    print_colored('error', 'Virus could not be killed')
+                    print_colored(Prefixes.WARNING, 'Virus could not be killed')
                     return False
                 except ProcessLookupError:
-                    print_colored('error', 'Another Anti Virus has already killed the virus')
+                    print_colored(Prefixes.WARNING, 'Another Anti Virus has already killed the virus')
                     return False
-        print_colored('anti virus', 'Virus killed')
+        print_colored(Prefixes.ANTI_VIRUS, 'Virus killed')
         return True
