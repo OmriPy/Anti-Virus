@@ -2,9 +2,11 @@ from user_utils import *
 from sys import argv
 from threading import Thread
 
+
 class UserSocket:
 
     server_ip = '127.0.0.1'
+    aes: AESCipher = None
     connected = False
 
     @classmethod
@@ -12,60 +14,71 @@ class UserSocket:
         if cls.connected:
             return
         # Connect to server
-        cls.user = Network.connected_socket(cls.server_ip)
+        cls.user = Network.Client.connected_socket(cls.server_ip)
         if not cls.user:
             Main.server_not_running()
-        print_colored('info', 'User has connected to the server')
-        server_msg = Network.send_and_recv(cls.user, Messages.IS_USER)
+            return
+        print_colored(Prefixes.INFO, 'User has connected to the server')
+
+        try:
+            server_msg = Network.send_and_recv(cls.user, Messages.IS_USER)
+        except ProtocolError as e:
+            print_colored(Prefixes.ERROR, e)
+            return
         if server_msg != Messages.OK:
-            print_colored('error', 'The server sent a message that is not OK. Exiting')
+            print_colored(Prefixes.WARNING, f'Server sent: {server_msg}. Expected: {Messages.OK}. Exiting')
             Main.exit()
+        cls.aes = Network.Client.establish_secure_connection(cls.user)
+
         cls.connected = True
 
     @classmethod
     def register(cls, user_details: Tuple[str, str, str, str]) -> Tuple[bool, str]:
-        regsiter_msg = UserMessages.register(user_details)
+        regsiter_msg = UserMessages.Register.register(user_details)
         try:
-            server_msg = Network.send_and_recv(cls.user, regsiter_msg)
+            server_msg = Network.send_and_recv(cls.user, regsiter_msg, cls.aes)
         except ProtocolError as e:
-            print_colored('error', e)
+            print_colored(Prefixes.ERROR, e)
             Main.exit()
-        if server_msg == UserMessages.REGISTER_OK:
+        if server_msg == UserMessages.Register.OK:
             return True, ''
-        elif server_msg == UserMessages.USER_EXISTS:
+        elif server_msg == UserMessages.Register.Errors.USER_EXISTS:
             return False, server_msg
+        else:
+            return False, 'Registration failed due to unrecognized reason'
 
     @classmethod
     def sign_in(cls, user_details: Tuple[str, str]) -> Tuple[bool, str]:
-        sign_in_msg = UserMessages.sign_in(user_details)
+        sign_in_msg = UserMessages.SignIn.sign_in(user_details)
         try:
-            server_msg = Network.send_and_recv(cls.user, sign_in_msg)
+            server_msg = Network.send_and_recv(cls.user, sign_in_msg, cls.aes)
         except ProtocolError as e:
-            print_colored('error', e)
+            print_colored(Prefixes.ERROR, e)
             Main.exit()
-        if server_msg == UserMessages.SIGN_IN_OK:
+        if server_msg == UserMessages.SignIn.OK:
             return True, server_msg
-        elif server_msg == UserMessages.NO_EXISTING_USER or \
-            server_msg == UserMessages.INCORRECT_PASS or \
-            server_msg == UserMessages.ALREADY_SIGNED_IN:
+        elif server_msg == UserMessages.SignIn.Errors.NO_EXISTING_USER or \
+            server_msg == UserMessages.SignIn.Errors.INCORRECT_PASS or \
+            server_msg == UserMessages.SignIn.Errors.ALREADY_SIGNED_IN:
             return False, server_msg
         else:
-            return False, 'General error'
-    
+            return False, 'Sign In failed due to unrecognized reason'
+
     @classmethod
-    def send_sign_out_request(cls) -> Tuple[bool, str]:
-        Network.send(cls.user, UserMessages.SIGN_OUT)
+    def send_sign_out_request(cls):
+        Network.send(cls.user, UserMessages.SignOut.SIGN_OUT, cls.aes)
+
 
     @classmethod
     def recieve_anti_virus_logs(cls):
         while True:
             try:
-                server_msg = Network.recv(cls.user)
+                server_msg = Network.recv(cls.user, cls.aes)
             except ProtocolError as e:
-                print_colored('error', e)
-                return
+                print_colored(Prefixes.ERROR, e)
+                continue
             except KeyboardInterrupt:
-                print_colored('info', Messages.CTRL_C)
+                print_colored(Prefixes.INFO, Messages.CTRL_C)
                 Main.exit()
 
             Main.update_sign_out_status(server_msg)
@@ -73,16 +86,16 @@ class UserSocket:
             if success:
                 break
 
-            print_colored('server', server_msg)
+            print_colored(Prefixes.SERVER, server_msg)
             Main.add_data(server_msg)
-            Network.send(cls.user, Messages.OK)
+            Network.send(cls.user, Messages.OK, cls.aes)
 
     @classmethod
     def close(cls):
         if cls.connected:
-            Network.send(cls.user, Messages.DISCONNECTION)
+            Network.send(cls.user, Messages.DISCONNECTION, cls.aes)
             cls.user.close()
-            print_colored('user', Messages.DISCONNECTION)
+            print_colored(Prefixes.USER, Messages.DISCONNECTION)
 
 
 class GUI(QWidget):
@@ -118,7 +131,7 @@ class GUI(QWidget):
             former_screen.remove()
 
         # Create Sign In Screen
-        width = 350
+        width = 400
         height = 350
         self.sign_in_screen = Screen(self, 'Sign In', (width, height,))
         self.sign_in_screen.center()
@@ -154,7 +167,7 @@ class GUI(QWidget):
 
         # Create Register Screen
         width = 350
-        height = 630
+        height = 600
         self.register_screen = Screen(self, 'Register', (width, height,))
         self.register_screen.center()
 
@@ -168,7 +181,7 @@ class GUI(QWidget):
         self.register_screen.add_widget(password_field)
 
         # Confirm password field
-        confirm_pass_field = InputField(self, 'Confirm Password', 'Enter your password again', hide=True)
+        confirm_pass_field = InputField(self, 'Confirm password', place_holder='Enter your password again', hide=True)
         self.register_screen.add_widget(confirm_pass_field)
 
         # Email field
@@ -176,7 +189,7 @@ class GUI(QWidget):
         self.register_screen.add_widget(email_field)
 
         # Phone Number field
-        phone_number_field = InputField(self, 'Phone Number')
+        phone_number_field = InputField(self, 'Phone number')
         self.register_screen.add_widget(phone_number_field)
 
         # Create register button
@@ -203,9 +216,16 @@ class GUI(QWidget):
         self.logs_screen = Screen(self, 'Anti Virus Logs', (width, height,))
         self.logs_screen.center()
 
-        # Add Label to Logs page
-        label = Label('Virus Detections Logs:')
-        self.logs_screen.add_widget(label)
+        # Add username label
+        username_label = Label(Main.username)
+        username_label.setStyleSheet('''
+                                     font-size: 14px;
+                                     text-decoration: underline''')
+        self.logs_screen.add_widget(username_label, True)
+
+        # Add label
+        title_label = Label('Virus Detections Logs:')
+        self.logs_screen.add_widget(title_label)
 
         # Add list view to Logs page
         self.list_view = ItemsList()
@@ -226,6 +246,7 @@ class GUI(QWidget):
 
 class Main:
 
+    username: Optional[str] = None
     sign_out_status: Tuple[bool, str] = (False, '')
 
     @classmethod
@@ -239,40 +260,54 @@ class Main:
     @classmethod
     def register(cls, user_details: Tuple[str, str, str, str, str]):
         username, password, confirm_pass, email, phone_number = user_details
-        if password != confirm_pass:
+        pass_length = len(password)
+        pass_min_length = 4
+        pass_max_length = 20
+        if not username or not password or not confirm_pass or not email or not phone_number:
+            pop_up = PopUp('All fields are required', PopUp.WARNING)
+        elif pass_length < pass_min_length or pass_length > pass_max_length:
+            pop_up = PopUp(f'Password length must be within the range {pass_min_length}-{pass_max_length}', PopUp.WARNING)
+        elif password != confirm_pass:
             pop_up = PopUp('Password and Confirm Password fields are not the same', PopUp.WARNING)
+        elif '@' not in email:
+            pop_up = PopUp('Invalid Email', PopUp.WARNING)
+        elif not phone_number.isnumeric():
+            pop_up = PopUp('Invalid Phone Number', PopUp.WARNING)
         else:
             UserSocket.connect_to_server()
-            success, reason = UserSocket.register(user_details)
-            if success:
-                pop_up = PopUp('Registration Completed', PopUp.INFO)
-                cls.gui.show_sign_in_screen(cls.gui.register_screen)
+            if UserSocket.connected:
+                success, reason = UserSocket.register(user_details)
+                if success:
+                    pop_up = PopUp('Registration Completed', PopUp.INFO)
+                    cls.gui.show_sign_in_screen(cls.gui.register_screen)
+                else:
+                    pop_up = PopUp(reason, PopUp.WARNING)
             else:
-                pop_up = PopUp(reason, PopUp.WARNING)
+                return
         pop_up.show()
-    
+
     @classmethod
     def sign_in(cls, user_details: Tuple[str, str]):
         UserSocket.connect_to_server()
-        success, reason = UserSocket.sign_in(user_details)
-        if success:
-            pop_up = PopUp('Sign In Successful!', PopUp.INFO)
-            pop_up.show()
-            cls.show_anti_virus_logs()
-        else:
-            pop_up = PopUp(reason, PopUp.WARNING)
-            pop_up.show()
+        if UserSocket.connected:
+            success, reason = UserSocket.sign_in(user_details)
+            if success:
+                username, password = user_details
+                cls.username = username
+                pop_up = PopUp('Sign In Successful!', PopUp.INFO)
+                pop_up.show()
+                cls.show_anti_virus_logs()
+            else:
+                pop_up = PopUp(reason, PopUp.WARNING)
+                pop_up.show()
 
     @classmethod
     def show_anti_virus_logs(cls):
-        cls.anti_virus_logs_thread = None
+        '''cls.anti_virus_logs_thread = None
         if cls.anti_virus_logs_thread and cls.anti_virus_logs_thread.is_alive():
-            return
+            return'''
         cls.anti_virus_logs_thread = Thread(target=UserSocket.recieve_anti_virus_logs)
         cls.anti_virus_logs_thread.start()
-        '''print_colored('debug', f'After starting thread: {cls.anti_virus_logs_thread.is_alive()}')
-        time.sleep(1)
-        print_colored('debug', f'1 second after starting thread: {cls.anti_virus_logs_thread.is_alive()}')'''
         cls.gui.show_anti_virus_logs_screen()
 
     @classmethod
@@ -281,6 +316,7 @@ class Main:
         cls.anti_virus_logs_thread.join()
         success, reason = cls.sign_out_status
         if success:
+            cls.username = None
             cls.gui.show_sign_in_screen(cls.gui.logs_screen)
         else:
             pop_up = PopUp(reason, PopUp.WARNING)
@@ -290,11 +326,12 @@ class Main:
     @classmethod
     def update_sign_out_status(cls, server_msg: str):
         status_map: Dict[str, Tuple[bool, str]] = {
-            UserMessages.NO_EXISTING_USER: (False, server_msg),
-            UserMessages.NOT_SIGNED_IN: (False, server_msg),
-            UserMessages.SIGN_OUT_OK: (True, '')
+            UserMessages.SignOut.OK: (True, ''),
+            UserMessages.SignOut.Errors.USER_NOT_FOUND: (False, server_msg),
+            UserMessages.SignOut.Errors.NOT_SIGNED_IN: (False, server_msg),
+            'default': (False, 'Sign Out failed due to unrecognized reason'),
         }
-        cls.sign_out_status = status_map.get(server_msg, (False, '',))
+        cls.sign_out_status = status_map.get(server_msg, status_map.get('default'))
 
 
     @classmethod
@@ -306,13 +343,12 @@ class Main:
     def server_not_running(cls):
         pop_up = PopUp('The server is not running', PopUp.CRITICAL)
         pop_up.show()
-        cls.exit()
 
     @classmethod
     def exit(cls):
         UserSocket.close()
-        print_colored('info', 'Exiting')
-        exit(0)
+        print_colored(Prefixes.INFO, 'Exiting')
+        exit()
 
 
 if __name__ == '__main__':
