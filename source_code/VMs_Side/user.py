@@ -13,23 +13,19 @@ class UserSocket:
     def connect_to_server(cls):
         if cls.connected:
             return
-        # Connect to server
+
         cls.user = Network.Client.connected_socket(cls.server_ip)
         if not cls.user:
-            Main.server_not_running()
+            Main.error('The server is not running')
             return
+
+        cls.aes = Network.Client.verify_connection_with_server(cls.user, Messages.IS_USER)
+        if not cls.aes:
+            cls.user.close()
+            Main.error('An error occurred during connection verification with the server')
+            return
+
         print_colored(Prefixes.INFO, 'User has connected to the server')
-
-        try:
-            server_msg = Network.send_and_recv(cls.user, Messages.IS_USER)
-        except ProtocolError as e:
-            print_colored(Prefixes.ERROR, e)
-            return
-        if server_msg != Messages.OK:
-            print_colored(Prefixes.WARNING, f'Server sent: {server_msg}. Expected: {Messages.OK}. Exiting')
-            Main.exit()
-        cls.aes = Network.Client.establish_secure_connection(cls.user)
-
         cls.connected = True
 
     @classmethod
@@ -167,9 +163,13 @@ class GUI(QWidget):
 
         # Create Register Screen
         width = 350
-        height = 600
+        height = 650
         self.register_screen = Screen(self, 'Register', (width, height,))
         self.register_screen.center()
+
+        # Go back to Sign in screen button
+        back_button = Button('Back', lambda: self.show_sign_in_screen(self.register_screen))
+        self.register_screen.add_widget(back_button)
 
         # Create fields
         # Username field
@@ -177,19 +177,28 @@ class GUI(QWidget):
         self.register_screen.add_widget(username_field)
 
         # Password field
-        password_field = InputField(self, 'Password', hide=True)
+        self.pass_min_length = 4
+        self.pass_max_length = 20
+        password_field = InputField(self, 
+                                    'Password',
+                                    place_holder=f'{self.pass_min_length}-{self.pass_max_length} characters',
+                                    hide=True)
         self.register_screen.add_widget(password_field)
 
         # Confirm password field
-        confirm_pass_field = InputField(self, 'Confirm password', place_holder='Enter your password again', hide=True)
+        confirm_pass_field = InputField(self,
+                                        'Confirm password',
+                                        place_holder='Enter your password again',
+                                        hide=True)
         self.register_screen.add_widget(confirm_pass_field)
 
         # Email field
-        email_field = InputField(self, 'Email')
+        email_field = InputField(self, 'Email', place_holder='username@example.com')
         self.register_screen.add_widget(email_field)
 
         # Phone Number field
         phone_number_field = InputField(self, 'Phone number')
+        phone_number_field.setInputMask('000-0000000;0')
         self.register_screen.add_widget(phone_number_field)
 
         # Create register button
@@ -211,8 +220,8 @@ class GUI(QWidget):
         self.sign_in_screen.remove()
 
         # Create Logs page
-        width = 425
-        height = 350
+        width = 500
+        height = 600
         self.logs_screen = Screen(self, 'Anti Virus Logs', (width, height,))
         self.logs_screen.center()
 
@@ -261,17 +270,18 @@ class Main:
     def register(cls, user_details: Tuple[str, str, str, str, str]):
         username, password, confirm_pass, email, phone_number = user_details
         pass_length = len(password)
-        pass_min_length = 4
-        pass_max_length = 20
+        
         if not username or not password or not confirm_pass or not email or not phone_number:
             pop_up = PopUp('All fields are required', PopUp.WARNING)
-        elif pass_length < pass_min_length or pass_length > pass_max_length:
-            pop_up = PopUp(f'Password length must be within the range {pass_min_length}-{pass_max_length}', PopUp.WARNING)
+        elif pass_length < cls.gui.pass_min_length or pass_length > cls.gui.pass_max_length:
+            pop_up = PopUp(
+                f'Password length must be within the range {cls.gui.pass_min_length}-{cls.gui.pass_max_length}',
+                PopUp.WARNING)
         elif password != confirm_pass:
             pop_up = PopUp('Password and Confirm Password fields are not the same', PopUp.WARNING)
         elif '@' not in email:
             pop_up = PopUp('Invalid Email', PopUp.WARNING)
-        elif not phone_number.isnumeric():
+        elif len(phone_number) != 11:
             pop_up = PopUp('Invalid Phone Number', PopUp.WARNING)
         else:
             UserSocket.connect_to_server()
@@ -338,11 +348,12 @@ class Main:
     def add_data(cls, data: str):
         cls.gui.add_data(data)
 
-
+    
     @classmethod
-    def server_not_running(cls):
-        pop_up = PopUp('The server is not running', PopUp.CRITICAL)
+    def error(cls, error_msg: str):
+        pop_up = PopUp(error_msg, PopUp.CRITICAL)
         pop_up.show()
+
 
     @classmethod
     def exit(cls):
