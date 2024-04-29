@@ -1,6 +1,16 @@
 Sorted by importance
 
-Whenever you run out of tasks, add tasks that you think are necessary from todo.txt in the repo to here
+Whenever you run out of tasks, add tasks from todo.txt in the repo to here
 
 General:
-*   Write the introduction to the book (מבוא)
+*   See what you can do about not using the protocol send and recv in secure connection establishment,
+    because can't decode those bytes. Maybe add functions that send and recv with bytes
+*   Continue as much as possible with the book
+*   Draw the super drawing.
+
+Do after next meeting:
+*   Add settings screen where you can update the user details nad remove account.
+*   Add option to remove account (implement in server and database as well)
+*   Change phone number field to password hint field, and if the user gets the error
+    "Password is incorrect" a lot of times (decide how many times), display the hint
+    for the password of the user
