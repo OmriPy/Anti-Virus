@@ -141,6 +141,12 @@ class InputField(BaseScreen):
     
     def text(self) -> str:
         return self.input_line.text()
+    
+    def setInputMask(self, inputMask: str | None):
+        self.input_line.setInputMask(inputMask)
+    
+    def hasAcceptableInput(self) -> bool:
+        return self.input_line.hasAcceptableInput()
 
 
 class PopUp(QMessageBox):
