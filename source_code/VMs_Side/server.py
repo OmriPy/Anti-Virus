@@ -5,7 +5,7 @@ from threading import Thread, Lock
 class Server:
 
     lock = Lock()
-    users = SocketsList()
+    signed_in_users = SocketsList()
     anti_viruses = SocketsList()
 
     @classmethod
@@ -22,12 +22,12 @@ class Server:
                 try:
                     client_identity = Network.recv(client)
                 except ProtocolError as e:
-                    print_colored(Prefixes.ERROR, e, cls.lock)
                     client.close()
+                    print_colored(Prefixes.ERROR, e, cls.lock)
                     continue
                 except KeyboardInterrupt:
-                    print_colored(Prefixes.INFO, Messages.CTRL_C, cls.lock)
                     client.close()
+                    print_colored(Prefixes.INFO, Messages.CTRL_C, cls.lock)
                     return
 
                 if client_identity == Messages.IS_USER:
@@ -45,6 +45,9 @@ class Server:
     @classmethod
     def handle_user(cls, user: socket):
         aes = Network.Server.establish_secure_connection(user)
+        if not aes:
+            user.close()
+            return
         username = ''
         while True:
             try:
@@ -90,21 +93,24 @@ class Server:
         success, reason = Database.sign_in(user_details)
         if success:
             Network.send(user, UserMessages.SignIn.OK, aes)
-            user_id = cls.users.add(user, aes)
+            user_id = cls.signed_in_users.add(user, aes)
             msg = UserMessages.SignIn.has_signed_in(username)
             print_colored(Prefixes.SERVER, msg, cls.lock)
             return username, user_id
         else:
             Network.send(user, reason, aes)
             return '', -1
-    
+
     @classmethod
-    def sign_out(cls, user: socket, aes: AESCipher, username: str, user_id: int):
-        success, reason = Database.sign_out(username)
-        if success:
+    def sign_out(cls, user: socket, aes: AESCipher, username: str, user_id: int) -> str:
+        found, reason = Database.sign_out(username)
+        if found:
+            if not cls.signed_in_users.exists(user_id):
+                Network.send(user, UserMessages.SignOut.Errors.NOT_SIGNED_IN, aes)
+                return ''
             Network.send(user, UserMessages.SignOut.OK, aes)
+            cls.signed_in_users.remove(user_id, False)
             msg = UserMessages.SignOut.signed_out(username)
-            cls.users.remove(user_id, False)
             print_colored(Prefixes.SERVER, msg, cls.lock)
         else:
             Network.send(user, reason, aes)
@@ -114,6 +120,9 @@ class Server:
     @classmethod
     def handle_anti_virus(cls, anti_virus: socket):
         aes = Network.Server.establish_secure_connection(anti_virus)
+        if not aes:
+            anti_virus.close()
+            return
         anti_virus_id = cls.anti_viruses.add(anti_virus, aes)
         msg = Messages.anti_virus_connected(anti_virus_id)
         print_colored(Prefixes.SERVER, msg, cls.lock)
@@ -127,7 +136,7 @@ class Server:
             Network.send(anti_virus, Messages.OK, aes)
             if anti_virus_msg == Messages.DISCONNECTION:
                 break
-            cls.users.send_to_all(anti_virus_msg)
+            cls.signed_in_users.send_to_all(anti_virus_msg)
         cls.anti_viruses.remove(anti_virus_id)
 
 
