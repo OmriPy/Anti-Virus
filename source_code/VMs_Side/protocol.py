@@ -14,7 +14,8 @@ class Network:
             Creates and returns a listening socket bound to the specified IP address.
 
             Parameters:
-            - IP (str): The IP address the server will listen on. Defaults to '0.0.0.0', which means all available interfaces.
+            - IP (str): The IP address the server will listen on.
+            Defaults to '0.0.0.0', which means all available interfaces.
 
             Returns:
             - socket: A socket object that is listening for incoming connections.
@@ -32,13 +33,13 @@ class Network:
                 elif e.errno == 49:
                     print_colored(Prefixes.ERROR, 'Cannot bind given IP address')
                 sock.close()
-                exit(0)
+                exit()
             print_colored(Prefixes.INFO, 'Server is up and running')
             sock.listen()
             return sock
 
         @classmethod
-        def establish_secure_connection(cls, client: socket) -> AESCipher:
+        def establish_secure_connection(cls, client: socket) -> AESCipher | None:
             """
             Establishes a secure connection with a client using RSA for key exchange and AES for encryption.
 
@@ -57,6 +58,9 @@ class Network:
             public_key, private_key = RSA.generate_keys()    # Generate RSA key pair
             client.send(RSA.export_key(public_key))   # Send RSA public key to client
             encrypted_aes_key = client.recv(1024)    # Receive AES key encrypted with RSA public key
+            if not encrypted_aes_key:
+                print_colored(Prefixes.ERROR, 'Received empty AES key')
+                return None
             aes_key = RSA.decrypt(private_key, encrypted_aes_key)    # Decrypt AES key with RSA private key
             aes_cipher = AESCipher(aes_key)    # Initialize AESCipher with AES key
             return aes_cipher   # Return AESCipher instance for secure communication
@@ -91,6 +95,7 @@ class Network:
             Returns:
             - AESCipher: An AESCipher object initialized with the generated AES key for encrypting and decrypting messages.
             """
+
             aes_key = generate_random_string()    # Generate random AES key
             aes_cipher = AESCipher(aes_key)    # Create AESCipher object
             public_key = client.recv(1024)    # Receive the RSA public key
@@ -99,19 +104,19 @@ class Network:
             return aes_cipher    # Return the AESCipher object
 
         @classmethod
-        def verify_connection_with_server(cls, client: socket, identity: str) -> Tuple[AESCipher, str]:
+        def verify_connection_with_server(cls, client: socket, identity: str) -> AESCipher | None:
             if identity != Messages.IS_USER and identity != Messages.IS_ANTI_VIRUS:
-                return None, 'Client identity is neither User nor Anti'
+                print_colored(Prefixes.WARNING, 'Client identity is neither User nor Anti')
+                return None
             try:
                 server_msg = Network.send_and_recv(client, identity)
             except ProtocolError as e:
                 print_colored(Prefixes.ERROR, e)
-                return None, 'Protocol error'
+                return None
             if server_msg != Messages.OK:
-                reason = f'Server sent: {server_msg}. Expected: {Messages.OK}'
-                print_colored(Prefixes.WARNING, reason)
-                return None, reason
-            cls.aes = Network.Client.establish_secure_connection(client) # think what to do about errors handling in this function
+                print_colored(Prefixes.ERROR, f'Server sent \'{server_msg}\', expected \'{Messages.OK}\'')
+                return None
+            return cls.establish_secure_connection(client)
 
 
     @classmethod
@@ -127,10 +132,12 @@ class Network:
     def recv(cls, sock: socket, aes: Optional[AESCipher] = None) -> str:
         """Recieves the message from the socket"""
 
-        bufsize = 1024
+        bufsize = 4096
         msg = ''
         try:
             size = sock.recv(Packet.EXACT_SIZE_LENGTH).decode()
+            if not size:
+                raise ProtocolError('Empty packet')
             msg += size
             size = int(size)
             iters = size // bufsize
