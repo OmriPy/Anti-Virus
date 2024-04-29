@@ -1,5 +1,12 @@
 from protocol import *
+from datetime import datetime
 import os, subprocess, platform
+
+
+def hour() -> str:
+    now = datetime.now()
+    return now.strftime("%H:%M")
+
 
 class _OperatingSystems:
 
@@ -91,7 +98,9 @@ class FindAndKillProcess:
                     print_colored(Prefixes.WARNING, 'Virus could not be killed')
                     return False
                 except ProcessLookupError:
-                    print_colored(Prefixes.WARNING, 'Another Anti Virus has already killed the virus')
-                    return False
+                    '''print_colored(Prefixes.WARNING, 'Another Anti Virus has already killed the virus')
+                    return False'''
+                    print_colored(Prefixes.DEBUG, 'hi')
+                    continue
         print_colored(Prefixes.ANTI_VIRUS, 'Virus killed')
         return True
