@@ -68,7 +68,7 @@ class RSA:
         decryptor = OAEP.new(private_key)
         decrypted = decryptor.decrypt(encrypted)
         return decrypted.decode()
-    
+
     @classmethod
     def export_key(cls, key: RsaKey) -> bytes:
         return key.export_key()
