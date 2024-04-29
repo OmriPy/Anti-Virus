@@ -8,39 +8,38 @@ class AntiVirus:
     delay = 5
     scan_outcomes: Dict[Tuple[bool, bool], str] = {
         (False, False): 'No virus detected',
-        (True, True): 'The virus was detected and killed successfully',
-        (True, False): 'The virus was detected but could not be killed'
+        (True, True): '[{}] The virus \"{}\" was detected and killed',
+        (True, False): '[{}] The virus \"{}\" was detected but could not be killed'
     }
 
     @classmethod
     def run(cls):
+        # Attempts to check whether the server is running or not
+        '''socket_attempt = Network.Client.connected_socket(cls.server_ip)
+        if not socket_attempt:
+            return
+        socket_attempt.close()'''
+
+        # Connect to the server
         with Network.Client.connected_socket(cls.server_ip) as cls.anti_virus:
+            cls.aes = Network.Client.verify_connection_with_server(cls.anti_virus, Messages.IS_ANTI_VIRUS)
+            if not cls.aes:
+                return
+
             print_colored(Prefixes.INFO, 'Anti Virus has connected to the server')
+            print_colored(Prefixes.INFO, f'Virus is \"{cls.virus}\"')
 
-            # Verify connection with the server
-            try:
-                server_msg = Network.send_and_recv(cls.anti_virus, Messages.IS_ANTI_VIRUS)
-            except ProtocolError as e:
-                print_colored(Prefixes.ERROR, e)
-                return
-            if server_msg != Messages.OK:
-                print_colored(Prefixes.WARNING, f'Server sent: {server_msg}. Expected: {Messages.OK}. Exiting')
-                return
-            cls.aes = Network.Client.establish_secure_connection(cls.anti_virus)
-
-            print_colored(Prefixes.INFO, f'Virus is: {cls.virus}')
-            # Main loop
             virus_proc = FindAndKillProcess(cls.virus)
             while True:
-                # Perform virus scanning and send results to the server
                 try:
                     scan_result = virus_proc.hunt()
                 except KeyboardInterrupt:
                     print_colored(Prefixes.ANTI_VIRUS, 'Scanning was interrupted')
                     cls.exit()
+
                 found, killed = scan_result
                 if found:
-                    msg = cls.scan_outcomes[scan_result]
+                    msg = cls.scan_outcomes[scan_result].format(hour(), cls.virus)
                     try:
                         server_msg = Network.send_and_recv(cls.anti_virus, msg, cls.aes)
                     except ProtocolError as e:
@@ -52,6 +51,7 @@ class AntiVirus:
                     time.sleep(cls.delay)
                 except KeyboardInterrupt:
                     cls.exit()
+
 
     @classmethod
     def exit(cls) -> NoReturn:
