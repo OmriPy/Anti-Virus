@@ -54,7 +54,6 @@ Important - must for project (MOE's) requirements:
           2.  base64_password
           3.  email
           4.  phone_number
-          5.  signed_in
         - Add a screenshot of the list of used VMs which is in VMware Fusion Library
         - Add to technologies (modules) list: VMware Fusion
         - Note that the clients are Kali Linux machines
