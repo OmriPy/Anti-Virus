@@ -1,4 +1,4 @@
-<mxfile host="app.diagrams.net" modified="2024-05-03T14:21:09.628Z" agent="Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/16.3 Safari/605.1.15" etag="XyshNgYoMDWDyHGDqU-W" version="24.3.1" type="device">
+<mxfile host="app.diagrams.net" modified="2024-05-03T15:47:47.585Z" agent="Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/16.3 Safari/605.1.15" etag="4qkxuqqqSH8X57qomCpi" version="24.3.1" type="device">
   <diagram name="Page-1" id="UbTQeYr05zvZgfwFsJ_H">
     <mxGraphModel dx="880" dy="435" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="850" pageHeight="1100" math="0" shadow="0">
       <root>
@@ -42,6 +42,59 @@
             <mxPoint x="310" y="270" as="sourcePoint" />
             <mxPoint x="230" y="270" as="targetPoint" />
           </mxGeometry>
+        </mxCell>
+        <mxCell id="14j113M1fvVUzlg5JaO--13" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" edge="1" parent="1" source="14j113M1fvVUzlg5JaO--12" target="14j113M1fvVUzlg5JaO--2">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="14j113M1fvVUzlg5JaO--12" value="&lt;i&gt;Opening app&lt;/i&gt;" style="shape=process;whiteSpace=wrap;html=1;backgroundOutline=1;" vertex="1" parent="1">
+          <mxGeometry x="400" y="70" width="120" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="14j113M1fvVUzlg5JaO--14" value="Home Page" style="swimlane;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="360" y="480" width="190" height="260" as="geometry">
+            <mxRectangle x="180" y="470" width="140" height="30" as="alternateBounds" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="14j113M1fvVUzlg5JaO--17" value="Back" style="rounded=0;whiteSpace=wrap;html=1;" vertex="1" parent="14j113M1fvVUzlg5JaO--14">
+          <mxGeometry x="10" y="40" width="60" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="14j113M1fvVUzlg5JaO--18" value="&lt;b&gt;&amp;lt;username&amp;gt;&#39;s Home Page:&lt;/b&gt;" style="text;html=1;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;" vertex="1" parent="14j113M1fvVUzlg5JaO--14">
+          <mxGeometry x="10" y="90" width="160" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="14j113M1fvVUzlg5JaO--19" value="View Virus Detections" style="rounded=0;whiteSpace=wrap;html=1;" vertex="1" parent="14j113M1fvVUzlg5JaO--14">
+          <mxGeometry x="30" y="130" width="130" height="50" as="geometry" />
+        </mxCell>
+        <mxCell id="14j113M1fvVUzlg5JaO--20" value="Settings" style="rounded=0;whiteSpace=wrap;html=1;" vertex="1" parent="14j113M1fvVUzlg5JaO--14">
+          <mxGeometry x="55" y="200" width="80" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="14j113M1fvVUzlg5JaO--21" value="Settings" style="swimlane;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="310" y="800" width="270" height="320" as="geometry" />
+        </mxCell>
+        <mxCell id="14j113M1fvVUzlg5JaO--22" value="Back" style="rounded=0;whiteSpace=wrap;html=1;" vertex="1" parent="14j113M1fvVUzlg5JaO--21">
+          <mxGeometry x="10" y="30" width="60" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="14j113M1fvVUzlg5JaO--24" value="Enter new username&amp;nbsp;" style="rounded=1;whiteSpace=wrap;html=1;" vertex="1" parent="14j113M1fvVUzlg5JaO--21">
+          <mxGeometry x="10" y="130" width="130" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="14j113M1fvVUzlg5JaO--25" value="Update" style="rounded=0;whiteSpace=wrap;html=1;" vertex="1" parent="14j113M1fvVUzlg5JaO--21">
+          <mxGeometry x="180" y="130" width="60" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="14j113M1fvVUzlg5JaO--26" value="&lt;b&gt;Update settings:&lt;/b&gt;" style="text;html=1;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;" vertex="1" parent="14j113M1fvVUzlg5JaO--21">
+          <mxGeometry x="10" y="90" width="110" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="14j113M1fvVUzlg5JaO--31" value="Enter new phone number" style="rounded=1;whiteSpace=wrap;html=1;" vertex="1" parent="14j113M1fvVUzlg5JaO--21">
+          <mxGeometry x="10" y="230" width="150" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="14j113M1fvVUzlg5JaO--32" value="Update" style="rounded=0;whiteSpace=wrap;html=1;" vertex="1" parent="14j113M1fvVUzlg5JaO--21">
+          <mxGeometry x="180" y="230" width="60" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="14j113M1fvVUzlg5JaO--29" value="Enter new email" style="rounded=1;whiteSpace=wrap;html=1;" vertex="1" parent="14j113M1fvVUzlg5JaO--21">
+          <mxGeometry x="10" y="180" width="110" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="14j113M1fvVUzlg5JaO--30" value="Update" style="rounded=0;whiteSpace=wrap;html=1;" vertex="1" parent="14j113M1fvVUzlg5JaO--21">
+          <mxGeometry x="180" y="180" width="60" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="14j113M1fvVUzlg5JaO--33" value="Update all" style="rounded=0;whiteSpace=wrap;html=1;" vertex="1" parent="14j113M1fvVUzlg5JaO--21">
+          <mxGeometry x="85" y="280" width="100" height="30" as="geometry" />
         </mxCell>
       </root>
     </mxGraphModel>
