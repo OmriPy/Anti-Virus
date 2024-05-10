@@ -1,3 +1,6 @@
+# NOTE
+For now I continue the project in my own computer so I won't update anything here in the next time.
+
 # Anti-Virus
 *Explanation of the project*
 
